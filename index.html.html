@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sechaba Khoboko | Software & Network Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0d;--card:#141414;--border:#222;--green:#00e676;--blue:#00b0ff;--orange:#ff6d00;--text:#f5f5f5;--muted:#888;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Mulish',sans-serif;overflow-x:hidden;}
+
+nav{position:fixed;top:0;width:100%;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 4rem;background:rgba(13,13,13,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:2px;color:#fff;}
+.logo span{color:var(--green);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover{color:var(--green);}
+.nav-cta{padding:.6rem 1.4rem;border:1px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:background .2s,color .2s;}
+.nav-cta:hover{background:var(--green);color:#0d0d0d;}
+
+.hero{min-height:100vh;display:flex;align-items:center;padding:8rem 4rem 4rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;}
+.glow1{position:absolute;top:-10%;right:-5%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,230,118,.07) 0%,transparent 65%);}
+.glow2{position:absolute;bottom:-10%;left:-5%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,176,255,.06) 0%,transparent 65%);}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:50px 50px;}
+.hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:4rem;align-items:center;width:100%;}
+.status-pill{display:inline-flex;align-items:center;gap:.6rem;padding:.4rem 1rem;border:1px solid rgba(0,230,118,.3);border-radius:20px;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:2rem;animation:fadeUp .7s ease both;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+h1{font-family:'Syne',sans-serif;font-size:clamp(3rem,6vw,5.5rem);font-weight:800;line-height:.95;margin-bottom:1.5rem;animation:fadeUp .7s .1s ease both;}
+h1 .nf{display:block;color:#fff;}
+h1 .nl{display:block;-webkit-text-stroke:1.5px #fff;color:transparent;}
+h1 .nl em{-webkit-text-stroke:0;color:var(--green);font-style:normal;}
+.hero-title{font-size:1rem;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:1.2rem;animation:fadeUp .7s .15s ease both;}
+.hero-desc{font-size:.95rem;color:var(--muted);line-height:1.9;max-width:500px;margin-bottom:2.5rem;animation:fadeUp .7s .2s ease both;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp .7s .25s ease both;}
+.btn-primary{padding:.9rem 2rem;background:var(--green);color:#0d0d0d;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:transform .2s,box-shadow .2s;}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,230,118,.3);}
+.btn-ghost{padding:.9rem 2rem;background:transparent;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border:1px solid var(--border);transition:border-color .2s,color .2s;}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
+
+.hero-card{background:var(--card);border:1px solid var(--border);padding:2rem;min-width:280px;animation:fadeUp .7s .35s ease both;}
+.card-top{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.cert-list{list-style:none;display:flex;flex-direction:column;gap:.8rem;}
+.cert-list li{display:flex;align-items:center;gap:.7rem;font-size:.8rem;color:var(--text);}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cg{background:var(--green);}
+.cb{background:var(--blue);}
+.co{background:var(--orange);}
+.cert-list li span{color:var(--muted);font-size:.7rem;}
+
+#about{padding:6rem 4rem;background:#111;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.sec-tag{font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--green);margin-bottom:.8rem;}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;margin-bottom:2rem;line-height:1.1;}
+.about-text p{color:var(--muted);line-height:2;font-size:.9rem;margin-bottom:1rem;}
+.about-text p strong{color:var(--text);}
+.about-hl{margin:1.5rem 0;padding:1.2rem 1.5rem;border-left:3px solid var(--orange);background:rgba(255,109,0,.05);}
+.about-hl p{color:rgba(245,245,245,.75)!important;font-style:italic;font-size:.85rem!important;margin:0!important;}
+.about-right{display:flex;flex-direction:column;gap:1rem;}
+.info-box{padding:1.5rem;border:1px solid var(--border);background:var(--card);}
+.info-label{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:.4rem;}
+.info-val{font-size:.88rem;color:var(--text);}
+.info-val a{color:var(--blue);text-decoration:none;}
+.info-val a:hover{text-decoration:underline;}
+
+#skills{padding:6rem 4rem;}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
+.skill-card{padding:1.8rem;background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .3s,border-color .3s;}
+.skill-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12);}
+.sk-accent{position:absolute;top:0;left:0;right:0;height:2px;}
+.skill-emoji{font-size:1.6rem;margin-bottom:1rem;}
+.skill-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.8rem;}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem;}
+.tag{font-size:.68rem;padding:.25rem .6rem;border-radius:2px;letter-spacing:.5px;}
+.tg{background:rgba(0,230,118,.1);color:var(--green);}
+.tb{background:rgba(0,176,255,.1);color:var(--blue);}
+.to{background:rgba(255,109,0,.1);color:var(--orange);}
+
+#projects{padding:6rem 4rem;background:#111;}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem;}
+.proj-card{background:var(--card);border:1px solid var(--border);overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.proj-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.proj-top{padding:1.8rem 1.8rem 1rem;display:flex;justify-content:space-between;align-items:flex-start;}
+.proj-num{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;opacity:.07;line-height:1;}
+.proj-badge{font-size:.65rem;padding:.3rem .7rem;border-radius:12px;letter-spacing:1px;}
+.bd{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.bl{background:rgba(0,176,255,.1);color:var(--blue);border:1px solid rgba(0,176,255,.2);}
+.bw{background:rgba(255,109,0,.1);color:var(--orange);border:1px solid rgba(255,109,0,.2);}
+.proj-body{padding:0 1.8rem 1.8rem;}
+.proj-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.6rem;}
+.proj-desc{font-size:.82rem;color:var(--muted);line-height:1.8;margin-bottom:1rem;}
+.proj-links{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;}
+.proj-link-green{display:inline-block;font-size:.75rem;color:var(--green);border:1px solid rgba(0,230,118,.3);padding:.4rem .9rem;text-decoration:none;letter-spacing:1px;transition:background .2s;}
+.proj-link-green:hover{background:rgba(0,230,118,.08);}
+.proj-link-blue{display:inline-block;font-size:.75rem;color:var(--blue);border:1px solid rgba(0,176,255,.3);padding:.4rem .9rem;text-decoration:none;letter-spacing:1px;transition:background .2s;}
+.proj-link-blue:hover{background:rgba(0,176,255,.08);}
+
+#experience{padding:6rem 4rem;}
+.exp-list{display:flex;flex-direction:column;gap:1.5rem;max-width:800px;}
+.exp-card{padding:2rem;background:var(--card);border:1px solid var(--border);display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;transition:border-color .3s;}
+.exp-card:hover{border-color:rgba(0,230,118,.3);}
+.exp-icon{width:44px;height:44px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.exp-role{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.3rem;}
+.exp-org{font-size:.8rem;color:var(--green);margin-bottom:.3rem;}
+.exp-period{font-size:.72rem;color:var(--muted);letter-spacing:1px;margin-bottom:.8rem;}
+.exp-desc{font-size:.85rem;color:var(--muted);line-height:1.8;}
+
+#certifications{padding:6rem 4rem;background:#111;}
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.cert-card{padding:1.5rem;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;gap:1rem;transition:border-color .3s,transform .3s;}
+.cert-card:hover{border-color:rgba(0,176,255,.3);transform:translateY(-3px);}
+.ci{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.ci-b{background:rgba(0,176,255,.15);}
+.ci-g{background:rgba(0,230,118,.15);}
+.ci-o{background:rgba(255,109,0,.15);}
+.cert-name{font-size:.82rem;color:var(--text);line-height:1.4;}
+
+#contact{padding:6rem 4rem;}
+.contact-inner{max-width:700px;margin:0 auto;text-align:center;}
+.contact-inner .sec-tag,.contact-inner .sec-title{text-align:center;}
+.contact-inner .sec-title{margin-bottom:1rem;}
+.contact-sub{font-size:.9rem;color:var(--muted);line-height:1.9;margin-bottom:2.5rem;}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.c-link{display:flex;align-items:center;gap:.6rem;padding:.9rem 1.6rem;border:1px solid var(--border);color:var(--text);text-decoration:none;font-size:.8rem;letter-spacing:1px;transition:border-color .2s,color .2s,transform .2s;}
+.c-link:hover{transform:translateY(-3px);}
+.c-link.gh:hover{border-color:var(--green);color:var(--green);}
+.c-link.em:hover{border-color:var(--blue);color:var(--blue);}
+.c-link.li:hover{border-color:#0077b5;color:#0077b5;}
+.download-row{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:1rem;}
+.dl-btn{display:flex;align-items:center;gap:.6rem;padding:.85rem 1.8rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:transform .2s,box-shadow .2s;}
+.dl-cv{background:var(--green);color:#0d0d0d;}
+.dl-cv:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,230,118,.3);}
+.dl-cl{background:transparent;color:var(--blue);border:1px solid var(--blue);}
+.dl-cl:hover{transform:translateY(-3px);background:rgba(0,176,255,.08);}
+
+footer{padding:2rem 4rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:var(--muted);}
+footer span{color:var(--green);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.reveal{opacity:0;transform:translateY(35px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem;}
+  .nav-links{display:none;}
+  .hero,.about-grid{padding:5rem 1.5rem 4rem;}
+  #about,#skills,#projects,#experience,#certifications,#contact{padding:4rem 1.5rem;}
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-card{display:none;}
+  .about-grid{grid-template-columns:1fr;gap:2.5rem;}
+  footer{flex-direction:column;gap:.8rem;text-align:center;padding:2rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">SK<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:sechaba.khoboko@bothouniversity.com" class="nav-cta">Hire Me</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"><div class="glow1"></div><div class="glow2"></div><div class="grid-bg"></div></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="status-pill"><span class="status-dot"></span> Available for Internship</div>
+      <h1><span class="nf">Sechaba</span><span class="nl">Khobo<em>ko</em></span></h1>
+      <div class="hero-title">Software &amp; Network Engineer</div>
+      <p class="hero-desc">3rd-year Computing student at Botho University, Maseru, Lesotho. CCNA Certified. I build software and design networks — bridging code and connectivity.</p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn-primary">View Projects</a>
+        <a href="#contact" class="btn-ghost">Get In Touch</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="card-top">// Certifications Snapshot</div>
+      <ul class="cert-list">
+        <li><span class="cdot cb"></span>CCNA: Introduction to Networks <span>Cisco</span></li>
+        <li><span class="cdot cg"></span>Introduction to Cybersecurity <span>Cisco</span></li>
+        <li><span class="cdot cb"></span>Network Support &amp; Security <span>Cisco</span></li>
+        <li><span class="cdot cg"></span>Python Essentials <span>Cisco</span></li>
+        <li><span class="cdot co"></span>CompTIA Cloud Intermediate</li>
+        <li><span class="cdot co"></span>Modern AI Certification</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <div class="sec-tag">About Me</div>
+      <h2 class="sec-title">Engineer.<br>Builder.<br>Problem Solver.</h2>
+      <p>I'm a <strong>3rd-year BSc Computing student</strong> at Botho University, Maseru, Lesotho — specializing in <strong>Networking &amp; Software Engineering</strong>. I hold a CCNA certification and have hands-on experience in both network infrastructure and software development.</p>
+      <p>My goal is to bridge the gap between <strong>hardware/networking and software solutions</strong> — understanding not just how applications are built, but how they communicate securely across infrastructure.</p>
+      <div class="about-hl"><p>"Trained in methodical troubleshooting for both code and connectivity. Available for a 6-month internship with immediate start."</p></div>
+    </div>
+    <div class="about-right">
+      <div class="info-box"><div class="info-label">Location</div><div class="info-val">Maseru, Lesotho</div></div>
+      <div class="info-box"><div class="info-label">University</div><div class="info-val">Botho University — 3rd Year</div></div>
+      <div class="info-box"><div class="info-label">Email</div><div class="info-val"><a href="mailto:sechaba.khoboko@bothouniversity.com">sechaba.khoboko@bothouniversity.com</a></div></div>
+      <div class="info-box"><div class="info-label">Phone</div><div class="info-val">+266 5994 1748</div></div>
+      <div class="info-box"><div class="info-label">LinkedIn</div><div class="info-val"><a href="https://www.linkedin.com/in/sechaba-khoboko-63b6133a8" target="_blank">sechaba-khoboko</a></div></div>
+      <div class="info-box"><div class="info-label">Status</div><div class="info-val" style="color:var(--green)">✓ Available — 6-month Internship</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="reveal"><div class="sec-tag">Technical Skills</div><h2 class="sec-title">What I Work With</h2></div>
+  <div class="skills-grid">
+    <div class="skill-card reveal"><div class="sk-accent" style="background:var(--blue)"></div><div class="skill-emoji">🌐</div><div class="skill-name">Networking</div><div class="tags"><span class="tag tb">Cisco Packet Tracer</span><span class="tag tb">CCNA</span><span class="tag tb">VLANs</span><span class="tag tb">OSPF</span><span class="tag tb">NAT/PAT</span><span class="tag tb">DHCP</span></div></div>
+    <div class="skill-card reveal"><div class="sk-accent" style="background:var(--green)"></div><div class="skill-emoji">💻</div><div class="skill-name">Programming</div><div class="tags"><span class="tag tg">Java</span><span class="tag tg">Python</span><span class="tag tg">C++</span><span class="tag tg">HTML</span></div></div>
+    <div class="skill-card reveal"><div class="sk-accent" style="background:var(--orange)"></div><div class="skill-emoji">🔐</div><div class="skill-name">Cybersecurity</div><div class="tags"><span class="tag to">Threat ID</span><span class="tag to">Network Defense</span><span class="tag to">ACLs</span><span class="tag to">Layer 2 Security</span></div></div>
+    <div class="skill-card reveal"><div class="sk-accent" style="background:var(--blue)"></div><div class="skill-emoji">🗄️</div><div class="skill-name">Databases</div><div class="tags"><span class="tag tb">SQL</span><span class="tag tb">Oracle DB</span></div></div>
+    <div class="skill-card reveal"><div class="sk-accent" style="background:var(--green)"></div><div class="skill-emoji">🛠️</div><div class="skill-name">Tools &amp; IDEs</div><div class="tags"><span class="tag tg">VS Code</span><span class="tag tg">NetBeans</span><span class="tag tg">Notepad++</span><span class="tag tg">GitHub</span></div></div>
+    <div class="skill-card reveal"><div class="sk-accent" style="background:var(--orange)"></div><div class="skill-emoji">☁️</div><div class="skill-name">Other</div><div class="tags"><span class="tag to">Cloud Computing</span><span class="tag to">AI Tools</span><span class="tag to">Excel</span></div></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="reveal"><div class="sec-tag">Projects</div><h2 class="sec-title">Things I've Built</h2></div>
+  <div class="projects-grid">
+
+    <div class="proj-card reveal">
+      <div class="proj-top"><div class="proj-num">01</div><span class="proj-badge bd">Completed</span></div>
+      <div class="proj-body">
+        <div class="proj-title">Enterprise Network — Brothers &amp; Sisters Retail</div>
+        <div class="proj-desc">Full enterprise network connecting Head Office and Branch Office. Configured VLANs, Inter-VLAN routing, OSPF, NAT/PAT, WLC with RADIUS authentication, DHCP, port security, DHCP snooping, DAI, and ACLs using Cisco Packet Tracer.</div>
+        <div class="proj-links">
+          <a href="https://github.com/sechaba10khoboko/Cisco-enterprise-network" target="_blank" class="proj-link-green">→ View on GitHub</a>
+        </div>
+        <div class="tags"><span class="tag tb">Cisco</span><span class="tag tb">VLANs</span><span class="tag tb">OSPF</span><span class="tag to">RADIUS</span><span class="tag to">ACLs</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-top"><div class="proj-num">02</div><span class="proj-badge bd">Completed</span></div>
+      <div class="proj-body">
+        <div class="proj-title">Desktop Application Suite</div>
+        <div class="proj-desc">Built multiple desktop applications using Java and C++ — including an ATM system simulation and a specialized tracing application — focusing on logical efficiency and clean architecture.</div>
+        <div class="proj-links">
+          <a href="https://github.com/sechaba10khoboko" target="_blank" class="proj-link-green">→ View on GitHub</a>
+        </div>
+        <div class="tags"><span class="tag tg">Java</span><span class="tag tg">C++</span><span class="tag tg">HTML</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-top"><div class="proj-num">03</div><span class="proj-badge bd">Completed</span></div>
+      <div class="proj-body">
+        <div class="proj-title">Wireless Network Design</div>
+        <div class="proj-desc">Designed and configured a wireless network topology using Cisco tools, applying network security certifications to harden the network against simulated threats.</div>
+        <div class="tags"><span class="tag tb">Cisco</span><span class="tag tb">Wireless</span><span class="tag to">Security</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-top"><div class="proj-num">04</div><span class="proj-badge bl">Live</span></div>
+      <div class="proj-body">
+        <div class="proj-title">AutoTrack — Car Fleet Tracker</div>
+        <div class="proj-desc">A full web-based car fleet management system. Register vehicles, assign drivers, check in/out, report stolen cars, search by plate number, and view full activity history.</div>
+        <div class="proj-links">
+          <a href="car-tracker.html" target="_blank" class="proj-link-green">→ Live Demo</a>
+          <a href="https://github.com/sechaba10khoboko/car-tracking-system" target="_blank" class="proj-link-blue">→ View on GitHub</a>
+        </div>
+        <div class="tags"><span class="tag tg">HTML</span><span class="tag tg">CSS</span><span class="tag tg">JavaScript</span><span class="tag tb">Fleet Mgmt</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-top"><div class="proj-num">05</div><span class="proj-badge bl">Live</span></div>
+      <div class="proj-body">
+        <div class="proj-title">AutoTrack — Fleet Dashboard</div>
+        <div class="proj-desc">A visual analytics dashboard for the car fleet system — live KPI stats, bar charts, donut charts, trend lines, utilization meters, stolen alerts and activity logs.</div>
+        <div class="proj-links">
+          <a href="car-dashboard.html" target="_blank" class="proj-link-green">→ Live Demo</a>
+          <a href="https://github.com/sechaba10khoboko/car-tracking-system" target="_blank" class="proj-link-blue">→ View on GitHub</a>
+        </div>
+        <div class="tags"><span class="tag tg">HTML</span><span class="tag tg">Chart.js</span><span class="tag tg">JavaScript</span><span class="tag tb">Data Viz</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="experience">
+  <div class="reveal"><div class="sec-tag">Experience</div><h2 class="sec-title">Work &amp; Involvement</h2></div>
+  <div class="exp-list">
+    <div class="exp-card reveal">
+      <div class="exp-icon">🔧</div>
+      <div>
+        <div class="exp-role">IT Support Technician (Volunteer)</div>
+        <div class="exp-org">Ts'akholo High School</div>
+        <div class="exp-period">During School Water Disaster</div>
+        <div class="exp-desc">Repaired and restored school computer lab units damaged during a water disaster. Applied hands-on hardware troubleshooting skills to get the school's systems back online — demonstrating initiative and technical ability under pressure.</div>
+      </div>
+    </div>
+    <div class="exp-card reveal">
+      <div class="exp-icon">🎓</div>
+      <div>
+        <div class="exp-role">BSc (Hons) Computing — Networking &amp; Software</div>
+        <div class="exp-org">Botho University, Maseru, Lesotho</div>
+        <div class="exp-period">2023 – Present · 3rd Year</div>
+        <div class="exp-desc">Key modules: Subnetting, Software Engineering, Database Systems. Completed Cisco CCNA certification alongside coursework. Available for a 6-month internship immediately.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="certifications">
+  <div class="reveal"><div class="sec-tag">Certifications</div><h2 class="sec-title">Credentials</h2></div>
+  <div class="certs-grid">
+    <div class="cert-card reveal"><div class="ci ci-b">🔵</div><div class="cert-name">CCNA: Introduction to Networks</div></div>
+    <div class="cert-card reveal"><div class="ci ci-b">🔵</div><div class="cert-name">Network Support &amp; Security</div></div>
+    <div class="cert-card reveal"><div class="ci ci-g">🟢</div><div class="cert-name">Introduction to Cybersecurity</div></div>
+    <div class="cert-card reveal"><div class="ci ci-g">🟢</div><div class="cert-name">Python Essentials</div></div>
+    <div class="cert-card reveal"><div class="ci ci-b">🔵</div><div class="cert-name">Exploring Networking with Cisco</div></div>
+    <div class="cert-card reveal"><div class="ci ci-o">🟠</div><div class="cert-name">Modern AI Certification</div></div>
+    <div class="cert-card reveal"><div class="ci ci-o">🟠</div><div class="cert-name">CompTIA Cloud Intermediate</div></div>
+    <div class="cert-card reveal"><div class="ci ci-o">🟠</div><div class="cert-name">Getting Started with Excel</div></div>
+    <div class="cert-card reveal"><div class="ci ci-o">🟠</div><div class="cert-name">Introduction to Computer Hardware &amp; Software</div></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-inner reveal">
+    <div class="sec-tag">Contact</div>
+    <h2 class="sec-title">Let's Work Together</h2>
+    <p class="contact-sub">I'm actively seeking a 6-month Software &amp; Network Engineering internship. If you have an opportunity or just want to connect — reach out, I respond fast.</p>
+    <div class="contact-links">
+      <a href="mailto:sechaba.khoboko@bothouniversity.com" class="c-link em">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>Email Me
+      </a>
+      <a href="https://www.linkedin.com/in/sechaba-khoboko-63b6133a8" target="_blank" class="c-link li">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn
+      </a>
+      <a href="https://github.com/sechaba10khoboko" target="_blank" class="c-link gh">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.73-4.04-1.6-4.04-1.6-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>GitHub
+      </a>
+    </div>
+    <div class="download-row">
+      <a href="Sechaba_Khoboko_Curriculum_Vitae.docx" download class="dl-btn dl-cv">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download CV
+      </a>
+      <a href="Sechaba_Khoboko_Cover_Letter.docx" download class="dl-btn dl-cl">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Cover Letter
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 <span>Sechaba Khoboko</span>. All rights reserved.</div>
+  <div>Built with HTML · Hosted on <span>GitHub Pages</span></div>
+</footer>
+
+<script>
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e,i) => { if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*60); });
+  },{threshold:0.08});
+  els.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
