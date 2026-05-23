@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTrack — Vehicle Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0c0f;--panel:#13151a;--card:#1a1d24;--border:#2a2d35;
+  --red:#ff3b3b;--yellow:#ffd60a;--green:#2ecc71;--blue:#3b82f6;
+  --text:#f0f0f0;--muted:#6b7280;--white:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* ── HEADER ── */
+header{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:100;
+}
+.brand{display:flex;align-items:center;gap:.8rem;}
+.brand-icon{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.brand-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:var(--white);}
+.brand-name span{color:var(--red);}
+.header-stats{display:flex;gap:2rem;}
+.hstat{text-align:center;}
+.hstat-num{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;}
+.hstat-label{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.hstat.red .hstat-num{color:var(--red);}
+.hstat.yellow .hstat-num{color:var(--yellow);}
+.hstat.green .hstat-num{color:var(--green);}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 65px);}
+
+/* ── SIDEBAR ── */
+aside{background:var(--panel);border-right:1px solid var(--border);padding:1.5rem 0;}
+.nav-section{margin-bottom:1.5rem;}
+.nav-label{font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:0 1.5rem;margin-bottom:.5rem;}
+.nav-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 1.5rem;font-size:.88rem;color:var(--muted);cursor:pointer;transition:background .2s,color .2s;border-left:2px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.03);color:var(--text);}
+.nav-item.active{color:var(--white);background:rgba(255,59,59,.07);border-left-color:var(--red);}
+.nav-item .ni{font-size:1rem;width:20px;text-align:center;}
+
+/* ── MAIN ── */
+main{padding:2rem;overflow-y:auto;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;}
+.page-title span{color:var(--red);}
+
+/* ── BUTTONS ── */
+.btn{padding:.65rem 1.4rem;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:transform .15s,box-shadow .15s;border:none;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-red:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,59,59,.3);}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--red);color:var(--red);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-yellow{background:var(--yellow);color:#0b0c0f;}
+.btn-sm{padding:.4rem .9rem;font-size:.75rem;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem;}
+.card-title{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);padding:1.5rem;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card.s-red::before{background:var(--red);}
+.stat-card.s-green::before{background:var(--green);}
+.stat-card.s-yellow::before{background:var(--yellow);}
+.stat-card.s-blue::before{background:var(--blue);}
+.stat-icon{font-size:1.5rem;margin-bottom:.8rem;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;}
+.stat-lbl{font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:.2rem;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:.8rem 1rem;text-align:left;border-bottom:1px solid var(--border);background:var(--panel);}
+td{padding:.9rem 1rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.04);}
+tr:hover td{background:rgba(255,255,255,.02);}
+.plate{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--yellow);}
+.status-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .7rem;border-radius:2px;font-size:.7rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.st-active{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.2);}
+.st-parked{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2);}
+.st-stolen{background:rgba(255,59,59,.12);color:var(--red);border:1px solid rgba(255,59,59,.2);}
+.st-maintenance{background:rgba(255,214,10,.12);color:var(--yellow);border:1px solid rgba(255,214,10,.2);}
+.action-btns{display:flex;gap:.4rem;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{display:flex;flex-direction:column;gap:.4rem;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+input,select,textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.7rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--red);}
+select option{background:var(--panel);}
+.form-actions{display:flex;gap:1rem;margin-top:1.5rem;}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;gap:1rem;margin-bottom:1.5rem;align-items:center;}
+.search-input-wrap{position:relative;flex:1;}
+.search-input-wrap input{padding-left:2.5rem;}
+.search-icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem;}
+.filter-select{width:160px;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border);padding:2rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;transition:color .2s;}
+.modal-close:hover{color:var(--red);}
+
+/* ── HISTORY ── */
+.history-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start;}
+.history-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.hi-green{background:rgba(46,204,113,.15);}
+.hi-red{background:rgba(255,59,59,.15);}
+.hi-yellow{background:rgba(255,214,10,.15);}
+.hi-blue{background:rgba(59,130,246,.15);}
+.history-text{font-size:.85rem;line-height:1.6;}
+.history-text strong{color:var(--white);}
+.history-time{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+
+/* ── STOLEN ALERT ── */
+.stolen-alert{background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.3);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+.stolen-alert .alert-icon{font-size:1.3rem;}
+.alert-text strong{color:var(--red);font-size:.9rem;}
+.alert-text p{font-size:.8rem;color:var(--muted);margin-top:.2rem;}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:1rem;}
+.empty-state p{font-size:.9rem;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--panel);border:1px solid var(--border);padding:1rem 1.5rem;font-size:.85rem;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:.7rem;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--red);}
+.toast.warning{border-left:3px solid var(--yellow);}
+
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;}
+  aside{display:none;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .header-stats{gap:1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <div class="brand-icon">🚗</div>
+    <div class="brand-name">Auto<span>Track</span></div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat green"><div class="hstat-num" id="h-active">0</div><div class="hstat-label">Active</div></div>
+    <div class="hstat yellow"><div class="hstat-num" id="h-parked">0</div><div class="hstat-label">Parked</div></div>
+    <div class="hstat red"><div class="hstat-num" id="h-stolen">0</div><div class="hstat-label">Stolen</div></div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showPage('vehicles')"><span class="ni">🚗</span> All Vehicles</div>
+      <div class="nav-item" onclick="showPage('register')"><span class="ni">➕</span> Register Car</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Tracking</div>
+      <div class="nav-item" onclick="showPage('checkin')"><span class="ni">🔑</span> Check In/Out</div>
+      <div class="nav-item" onclick="showPage('stolen')"><span class="ni">🚨</span> Stolen Cars</div>
+      <div class="nav-item" onclick="showPage('search')"><span class="ni">🔍</span> Search by Plate</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Records</div>
+      <div class="nav-item" onclick="showPage('history')"><span class="ni">📋</span> History Log</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">DASH<span>BOARD</span></div>
+        <button class="btn btn-red" onclick="showPage('register')">+ Register Car</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card s-blue"><div class="stat-icon">🚗</div><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total Vehicles</div></div>
+        <div class="stat-card s-green"><div class="stat-icon">✅</div><div class="stat-num" id="stat-active">0</div><div class="stat-lbl">Active / On Road</div></div>
+        <div class="stat-card s-yellow"><div class="stat-icon">🅿️</div><div class="stat-num" id="stat-parked">0</div><div class="stat-lbl">Parked</div></div>
+        <div class="stat-card s-red"><div class="stat-icon">🚨</div><div class="stat-num" id="stat-stolen">0</div><div class="stat-lbl">Stolen / Missing</div></div>
+      </div>
+      <!-- Stolen alerts -->
+      <div id="stolen-alerts"></div>
+      <!-- Recent activity -->
+      <div class="card">
+        <div class="card-title">Recent Activity</div>
+        <div id="dash-history"></div>
+      </div>
+    </div>
+
+    <!-- ALL VEHICLES -->
+    <div class="page" id="page-vehicles">
+      <div class="page-header">
+        <div class="page-title">ALL <span>VEHICLES</span></div>
+        <button class="btn btn-red" onclick="showPage('register')">+ Add Vehicle</button>
+      </div>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="veh-search" placeholder="Search by plate, make, model, driver..." oninput="renderVehicles()">
+        </div>
+        <select class="filter-select" id="veh-filter" onchange="renderVehicles()">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="parked">Parked</option>
+          <option value="stolen">Stolen</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Plate</th><th>Make / Model</th><th>Year</th><th>Driver</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vehicles-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="page" id="page-register">
+      <div class="page-header">
+        <div class="page-title">REGISTER <span>VEHICLE</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Vehicle Information</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Plate Number *</label><input id="reg-plate" type="text" placeholder="e.g. ABC 123 LS" style="text-transform:uppercase"></div>
+          <div class="form-group"><label>Make (Brand) *</label><input id="reg-make" type="text" placeholder="e.g. Toyota"></div>
+          <div class="form-group"><label>Model *</label><input id="reg-model" type="text" placeholder="e.g. Corolla"></div>
+          <div class="form-group"><label>Year</label><input id="reg-year" type="number" placeholder="e.g. 2020" min="1990" max="2030"></div>
+          <div class="form-group"><label>Color</label><input id="reg-color" type="text" placeholder="e.g. Silver"></div>
+          <div class="form-group"><label>VIN / Serial Number</label><input id="reg-vin" type="text" placeholder="e.g. 1HGBH41JXMN109186"></div>
+          <div class="form-group"><label>Assigned Driver</label><input id="reg-driver" type="text" placeholder="Full name of driver"></div>
+          <div class="form-group"><label>Driver Phone</label><input id="reg-phone" type="text" placeholder="e.g. +266 5500 0000"></div>
+          <div class="form-group full"><label>Notes</label><textarea id="reg-notes" rows="3" placeholder="Any additional information..."></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-red" onclick="registerVehicle()">Register Vehicle</button>
+          <button class="btn btn-outline" onclick="clearRegForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECK IN/OUT -->
+    <div class="page" id="page-checkin">
+      <div class="page-header">
+        <div class="page-title">CHECK IN / <span>OUT</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Update Vehicle Status</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Select Vehicle by Plate</label>
+            <select id="ci-plate"><option value="">-- Select Plate --</option></select>
+          </div>
+          <div class="form-group">
+            <label>New Status</label>
+            <select id="ci-status">
+              <option value="active">🟢 Active — On Road</option>
+              <option value="parked">🔵 Parked</option>
+              <option value="maintenance">🟡 Under Maintenance</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Driver / Notes</label>
+            <input id="ci-note" type="text" placeholder="Who is driving? Any notes?">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="checkInOut()">Update Status</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Check Ins/Outs</div>
+        <div id="checkin-history"></div>
+      </div>
+    </div>
+
+    <!-- STOLEN -->
+    <div class="page" id="page-stolen">
+      <div class="page-header">
+        <div class="page-title">STOLEN / <span>MISSING</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🚨 Report a Stolen Vehicle</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Select Vehicle</label>
+            <select id="st-plate"><option value="">-- Select Plate --</option></select>
+          </div>
+          <div class="form-group">
+            <label>Date & Time Stolen</label>
+            <input id="st-time" type="datetime-local">
+          </div>
+          <div class="form-group full">
+            <label>Last Known Location</label>
+            <input id="st-location" type="text" placeholder="e.g. Maseru CBD, near Pick n Pay">
+          </div>
+          <div class="form-group full">
+            <label>Description of Incident</label>
+            <textarea id="st-desc" rows="3" placeholder="Describe what happened..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-red" onclick="reportStolen()">🚨 Report Stolen</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Currently Reported Stolen</div>
+        <div id="stolen-list"></div>
+      </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="page" id="page-search">
+      <div class="page-header">
+        <div class="page-title">SEARCH BY <span>PLATE</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Enter Plate Number</div>
+        <div style="display:flex;gap:1rem;">
+          <input id="plate-search-input" type="text" placeholder="e.g. ABC 123 LS" style="text-transform:uppercase;flex:1">
+          <button class="btn btn-red" onclick="searchPlate()">Search</button>
+        </div>
+      </div>
+      <div id="search-result"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="page" id="page-history">
+      <div class="page-header">
+        <div class="page-title">HISTORY <span>LOG</span></div>
+        <button class="btn btn-outline btn-sm" onclick="clearHistory()">Clear Log</button>
+      </div>
+      <div class="card">
+        <div id="full-history"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="view-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-plate-title">VEHICLE DETAILS</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+let vehicles = JSON.parse(localStorage.getItem('at_vehicles') || '[]');
+let history  = JSON.parse(localStorage.getItem('at_history')  || '[]');
+
+function save(){
+  localStorage.setItem('at_vehicles', JSON.stringify(vehicles));
+  localStorage.setItem('at_history',  JSON.stringify(history));
+}
+
+// ── TOAST ──
+function toast(msg, type='success'){
+  const t = document.getElementById('toast');
+  const icons = {success:'✅', error:'❌', warning:'⚠️'};
+  t.innerHTML = `${icons[type]} ${msg}`;
+  t.className = `toast ${type} show`;
+  setTimeout(()=>t.className='toast', 3000);
+}
+
+// ── NAV ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')?.includes(id)) n.classList.add('active');
+  });
+  if(id==='dashboard') renderDashboard();
+  if(id==='vehicles')  renderVehicles();
+  if(id==='checkin')   {populatePlateSelect('ci-plate'); renderCheckinHistory();}
+  if(id==='stolen')    {populatePlateSelect('st-plate'); renderStolenList();}
+  if(id==='history')   renderFullHistory();
+  updateHeaderStats();
+}
+
+// ── STATS ──
+function updateHeaderStats(){
+  const active  = vehicles.filter(v=>v.status==='active').length;
+  const parked  = vehicles.filter(v=>v.status==='parked').length;
+  const stolen  = vehicles.filter(v=>v.status==='stolen').length;
+  document.getElementById('h-active').textContent  = active;
+  document.getElementById('h-parked').textContent  = parked;
+  document.getElementById('h-stolen').textContent  = stolen;
+  document.getElementById('stat-total').textContent  = vehicles.length;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-parked').textContent = parked;
+  document.getElementById('stat-stolen').textContent = stolen;
+}
+
+// ── STATUS BADGE ──
+function badge(status){
+  const map = {
+    active:`<span class="status-badge st-active">🟢 Active</span>`,
+    parked:`<span class="status-badge st-parked">🔵 Parked</span>`,
+    stolen:`<span class="status-badge st-stolen">🚨 Stolen</span>`,
+    maintenance:`<span class="status-badge st-maintenance">🟡 Maintenance</span>`
+  };
+  return map[status]||`<span class="status-badge">${status}</span>`;
+}
+
+// ── REGISTER ──
+function registerVehicle(){
+  const plate = document.getElementById('reg-plate').value.trim().toUpperCase();
+  const make  = document.getElementById('reg-make').value.trim();
+  const model = document.getElementById('reg-model').value.trim();
+  if(!plate||!make||!model){ toast('Plate, Make and Model are required','error'); return; }
+  if(vehicles.find(v=>v.plate===plate)){ toast('Plate already registered!','error'); return; }
+  const v = {
+    id: Date.now(),
+    plate, make, model,
+    year:   document.getElementById('reg-year').value||'—',
+    color:  document.getElementById('reg-color').value||'—',
+    vin:    document.getElementById('reg-vin').value||'—',
+    driver: document.getElementById('reg-driver').value||'Unassigned',
+    phone:  document.getElementById('reg-phone').value||'—',
+    notes:  document.getElementById('reg-notes').value||'',
+    status: 'parked',
+    registered: new Date().toLocaleString()
+  };
+  vehicles.push(v);
+  addHistory('register', `<strong>${plate}</strong> — ${make} ${model} registered`, 'blue');
+  save(); toast(`${plate} registered successfully!`);
+  clearRegForm(); showPage('vehicles');
+}
+
+function clearRegForm(){
+  ['reg-plate','reg-make','reg-model','reg-year','reg-color','reg-vin','reg-driver','reg-phone','reg-notes']
+    .forEach(id=>document.getElementById(id).value='');
+}
+
+// ── RENDER VEHICLES ──
+function renderVehicles(){
+  const q = (document.getElementById('veh-search')?.value||'').toLowerCase();
+  const f = document.getElementById('veh-filter')?.value||'';
+  let list = vehicles.filter(v=>{
+    const match = !q || `${v.plate} ${v.make} ${v.model} ${v.driver}`.toLowerCase().includes(q);
+    const filt  = !f || v.status===f;
+    return match && filt;
+  });
+  const tbody = document.getElementById('vehicles-tbody');
+  if(!tbody) return;
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--muted)">No vehicles found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(v=>`
+    <tr>
+      <td><span class="plate">${v.plate}</span></td>
+      <td>${v.make} ${v.model}</td>
+      <td>${v.year}</td>
+      <td>${v.driver}</td>
+      <td>${badge(v.status)}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn btn-outline btn-sm" onclick="viewVehicle(${v.id})">View</button>
+          <button class="btn btn-yellow btn-sm" onclick="quickStatus(${v.id})">Status</button>
+          <button class="btn btn-red btn-sm" onclick="deleteVehicle(${v.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── VIEW VEHICLE ──
+function viewVehicle(id){
+  const v = vehicles.find(x=>x.id===id);
+  if(!v) return;
+  document.getElementById('modal-plate-title').textContent = v.plate;
+  document.getElementById('modal-content').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+      ${[['Make',v.make],['Model',v.model],['Year',v.year],['Color',v.color],
+         ['VIN',v.vin],['Driver',v.driver],['Phone',v.phone],['Registered',v.registered]]
+        .map(([l,val])=>`<div><div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem">${l}</div><div style="font-size:.9rem">${val}</div></div>`).join('')}
+    </div>
+    <div style="margin-bottom:1rem">${badge(v.status)}</div>
+    ${v.notes?`<div style="font-size:.85rem;color:var(--muted);padding:1rem;background:var(--bg);border:1px solid var(--border)">${v.notes}</div>`:''}
+    <div style="display:flex;gap:.8rem;margin-top:1.5rem;">
+      <button class="btn btn-red btn-sm" onclick="reportStolenDirect(${v.id})">🚨 Report Stolen</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Close</button>
+    </div>
+  `;
+  document.getElementById('view-modal').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('view-modal').classList.remove('open'); }
+
+// ── QUICK STATUS ──
+function quickStatus(id){
+  const v = vehicles.find(x=>x.id===id);
+  if(!v) return;
+  const statuses = ['active','parked','maintenance'];
+  const cur = statuses.indexOf(v.status);
+  const next = statuses[(cur+1)%statuses.length];
+  v.status = next;
+  addHistory('status', `<strong>${v.plate}</strong> status changed to <strong>${next}</strong>`, next==='active'?'green':next==='parked'?'blue':'yellow');
+  save(); renderVehicles(); updateHeaderStats(); toast(`${v.plate} → ${next}`);
+}
+
+// ── DELETE ──
+function deleteVehicle(id){
+  const v = vehicles.find(x=>x.id===id);
+  if(!v) return;
+  if(!confirm(`Delete ${v.plate}?`)) return;
+  vehicles = vehicles.filter(x=>x.id!==id);
+  addHistory('delete', `<strong>${v.plate}</strong> removed from system`, 'red');
+  save(); renderVehicles(); updateHeaderStats(); toast(`${v.plate} deleted`,'warning');
+}
+
+// ── CHECK IN/OUT ──
+function populatePlateSelect(selId){
+  const sel = document.getElementById(selId);
+  if(!sel) return;
+  sel.innerHTML = '<option value="">-- Select Plate --</option>' +
+    vehicles.filter(v=>v.status!=='stolen').map(v=>`<option value="${v.id}">${v.plate} — ${v.make} ${v.model}</option>`).join('');
+}
+
+function checkInOut(){
+  const id  = parseInt(document.getElementById('ci-plate').value);
+  const st  = document.getElementById('ci-status').value;
+  const note= document.getElementById('ci-note').value;
+  if(!id){ toast('Please select a vehicle','error'); return; }
+  const v = vehicles.find(x=>x.id===id);
+  const old = v.status;
+  v.status = st;
+  if(note) v.driver = note.split(' ')[0];
+  addHistory('checkin', `<strong>${v.plate}</strong> ${old}→${st}${note?' — '+note:''}`, st==='active'?'green':st==='parked'?'blue':'yellow');
+  save(); updateHeaderStats(); renderCheckinHistory(); toast(`${v.plate} updated to ${st}`);
+  document.getElementById('ci-note').value='';
+}
+
+function renderCheckinHistory(){
+  const el = document.getElementById('checkin-history');
+  if(!el) return;
+  const items = history.filter(h=>h.type==='checkin').slice(-8).reverse();
+  if(!items.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><p>No check in/out records yet</p></div>'; return; }
+  el.innerHTML = items.map(h=>historyItem(h)).join('');
+}
+
+// ── STOLEN ──
+function reportStolen(){
+  const id  = parseInt(document.getElementById('st-plate').value);
+  const time = document.getElementById('st-time').value;
+  const loc  = document.getElementById('st-location').value;
+  const desc = document.getElementById('st-desc').value;
+  if(!id){ toast('Please select a vehicle','error'); return; }
+  const v = vehicles.find(x=>x.id===id);
+  v.status = 'stolen';
+  v.stolenInfo = {time, location:loc||'Unknown', description:desc||'No description'};
+  addHistory('stolen', `🚨 <strong>${v.plate}</strong> reported STOLEN — Last seen: ${loc||'Unknown'}`, 'red');
+  save(); updateHeaderStats(); renderStolenList();
+  toast(`${v.plate} reported as stolen! 🚨`, 'error');
+  document.getElementById('st-time').value='';
+  document.getElementById('st-location').value='';
+  document.getElementById('st-desc').value='';
+}
+
+function reportStolenDirect(id){
+  closeModal();
+  showPage('stolen');
+  setTimeout(()=>{
+    populatePlateSelect('st-plate');
+    document.getElementById('st-plate').value = id;
+  },100);
+}
+
+function renderStolenList(){
+  const el = document.getElementById('stolen-list');
+  if(!el) return;
+  const stolen = vehicles.filter(v=>v.status==='stolen');
+  if(!stolen.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">✅</div><p>No stolen vehicles reported</p></div>'; return; }
+  el.innerHTML = stolen.map(v=>`
+    <div class="stolen-alert">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-text" style="flex:1">
+        <strong>${v.plate} — ${v.make} ${v.model} (${v.color})</strong>
+        <p>Last seen: ${v.stolenInfo?.location||'Unknown'} · ${v.stolenInfo?.time||'Unknown time'}</p>
+        ${v.stolenInfo?.description?`<p style="margin-top:.3rem">${v.stolenInfo.description}</p>`:''}
+      </div>
+      <button class="btn btn-green btn-sm" onclick="recoverVehicle(${v.id})">Mark Recovered</button>
+    </div>
+  `).join('');
+}
+
+function recoverVehicle(id){
+  const v = vehicles.find(x=>x.id===id);
+  v.status='parked'; v.stolenInfo=null;
+  addHistory('recovered', `✅ <strong>${v.plate}</strong> marked as RECOVERED`, 'green');
+  save(); updateHeaderStats(); renderStolenList(); toast(`${v.plate} recovered!`);
+}
+
+// ── SEARCH ──
+function searchPlate(){
+  const q = document.getElementById('plate-search-input').value.trim().toUpperCase();
+  const el = document.getElementById('search-result');
+  if(!q){ el.innerHTML=''; return; }
+  const v = vehicles.find(x=>x.plate.includes(q));
+  if(!v){
+    el.innerHTML=`<div class="card"><div class="empty-state"><div class="empty-icon">🔍</div><p>No vehicle found with plate "<strong>${q}</strong>"</p></div></div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div class="plate" style="font-size:1.8rem">${v.plate}</div>
+        ${badge(v.status)}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        ${[['Make',v.make],['Model',v.model],['Year',v.year],['Color',v.color],
+           ['Driver',v.driver],['Phone',v.phone],['VIN',v.vin],['Registered',v.registered]]
+          .map(([l,val])=>`<div><div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem">${l}</div><div style="font-size:.9rem">${val}</div></div>`).join('')}
+      </div>
+      ${v.status==='stolen'?`<div class="stolen-alert" style="margin-top:1rem"><div class="alert-icon">🚨</div><div class="alert-text"><strong>THIS VEHICLE IS REPORTED STOLEN</strong><p>Last seen: ${v.stolenInfo?.location||'Unknown'}</p></div></div>`:''}
+    </div>
+  `;
+}
+
+// ── HISTORY ──
+function addHistory(type, text, color){
+  history.unshift({type, text, color, time: new Date().toLocaleString()});
+  if(history.length>100) history.pop();
+  save();
+}
+
+function historyItem(h){
+  const icons = {green:'✅',red:'🚨',yellow:'⚠️',blue:'ℹ️'};
+  const cls   = {green:'hi-green',red:'hi-red',yellow:'hi-yellow',blue:'hi-blue'};
+  return `
+    <div class="history-item">
+      <div class="history-icon ${cls[h.color]||'hi-blue'}">${icons[h.color]||'📋'}</div>
+      <div><div class="history-text">${h.text}</div><div class="history-time">${h.time}</div></div>
+    </div>`;
+}
+
+function renderFullHistory(){
+  const el = document.getElementById('full-history');
+  if(!el) return;
+  if(!history.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><p>No history yet</p></div>'; return; }
+  el.innerHTML = history.map(h=>historyItem(h)).join('');
+}
+
+function renderDashboard(){
+  // stolen alerts
+  const stolen = vehicles.filter(v=>v.status==='stolen');
+  document.getElementById('stolen-alerts').innerHTML = stolen.map(v=>`
+    <div class="stolen-alert">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-text"><strong>${v.plate} — ${v.make} ${v.model}</strong><p>Reported stolen · Last seen: ${v.stolenInfo?.location||'Unknown'}</p></div>
+    </div>`).join('');
+  // recent history
+  const dh = document.getElementById('dash-history');
+  if(!history.length){ dh.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><p>No activity yet. Register your first vehicle!</p></div>'; return; }
+  dh.innerHTML = history.slice(0,6).map(h=>historyItem(h)).join('');
+}
+
+function clearHistory(){
+  if(!confirm('Clear all history?')) return;
+  history=[]; save(); renderFullHistory(); toast('History cleared','warning');
+}
+
+// ── INIT ──
+// Add sample data if empty
+if(!vehicles.length){
+  vehicles=[
+    {id:1,plate:'ABC 123 LS',make:'Toyota',model:'Corolla',year:'2021',color:'White',vin:'1HGBH41JX',driver:'Sechaba Khoboko',phone:'+266 5994 1748',notes:'Company fleet car',status:'active',registered:new Date().toLocaleString()},
+    {id:2,plate:'XYZ 456 LS',make:'Ford',model:'Ranger',year:'2019',color:'Black',vin:'2FTZX1744',driver:'Unassigned',phone:'—',notes:'',status:'parked',registered:new Date().toLocaleString()},
+    {id:3,plate:'DEF 789 LS',make:'Hyundai',model:'i20',year:'2022',color:'Red',vin:'KMHCT41A',driver:'John Doe',phone:'+266 5800 0000',notes:'Branch office vehicle',status:'maintenance',registered:new Date().toLocaleString()},
+  ];
+  history=[
+    {type:'register',text:'<strong>ABC 123 LS</strong> — Toyota Corolla registered',color:'blue',time:new Date().toLocaleString()},
+    {type:'register',text:'<strong>XYZ 456 LS</strong> — Ford Ranger registered',color:'blue',time:new Date().toLocaleString()},
+  ];
+  save();
+}
+
+updateHeaderStats();
+renderDashboard();
+</script>
+</body>
+</html>
