@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masika's ATM</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#080808;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;font-family:'Share Tech Mono',monospace;
+  background-image:radial-gradient(ellipse at 50% 50%,#111a11 0%,#080808 70%);
+  padding:20px;
+}
+
+/* ATM MACHINE */
+.atm{
+  width:430px;
+  background:linear-gradient(160deg,#1a1a1a,#0e0e0e);
+  border:2px solid #2a2a2a;border-radius:18px;
+  padding:22px;
+  box-shadow:0 0 80px rgba(0,230,118,.06),0 50px 100px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* HEADER */
+.atm-header{text-align:center;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #1e1e1e;}
+.atm-logo{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;color:#00e676;letter-spacing:4px;text-shadow:0 0 25px rgba(0,230,118,.4);}
+.atm-logo span{color:#fff;}
+.atm-tagline{font-size:.55rem;color:#444;letter-spacing:4px;text-transform:uppercase;margin-top:3px;}
+
+/* CARD SLOT */
+.card-slot{background:#0a0a0a;border:2px solid #1a1a1a;border-radius:3px;height:7px;margin-bottom:16px;overflow:hidden;position:relative;}
+.card-slot::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,230,118,.08),transparent);animation:scan 3s infinite;}
+@keyframes scan{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+/* SCREEN */
+.atm-screen{
+  background:#000;border:3px solid #181818;border-radius:8px;
+  min-height:330px;padding:18px;margin-bottom:18px;
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.9),0 0 15px rgba(0,230,118,.04);
+}
+.scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,80,.008) 2px,rgba(0,255,80,.008) 4px);pointer-events:none;z-index:10;}
+.sglow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,230,118,.03) 0%,transparent 65%);pointer-events:none;}
+
+/* PAGES */
+.page{display:none;animation:fi .25s ease;}
+.page.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── WELCOME ── */
+.w-time{font-size:.62rem;color:#333;text-align:center;margin-bottom:16px;letter-spacing:2px;}
+.w-icon{text-align:center;font-size:2.8rem;margin-bottom:10px;}
+.w-title{font-family:'Orbitron',sans-serif;font-size:.95rem;color:#00e676;text-align:center;letter-spacing:3px;margin-bottom:6px;}
+.w-sub{font-size:.62rem;color:#444;text-align:center;line-height:1.9;margin-bottom:20px;}
+.w-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.w-btn{padding:12px 8px;border:1px solid #2a2a2a;background:#0d0d0d;text-align:center;cursor:pointer;transition:all .2s;font-family:'Share Tech Mono',monospace;}
+.w-btn.login{border-color:rgba(0,230,118,.3);color:#00e676;}
+.w-btn.login:hover{background:#0a1a0f;box-shadow:0 0 15px rgba(0,230,118,.1);}
+.w-btn.register{border-color:rgba(0,176,255,.3);color:#00b0ff;}
+.w-btn.register:hover{background:#0a0f1a;}
+.w-btn-icon{font-size:1.4rem;display:block;margin-bottom:4px;}
+.w-btn-label{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;}
+
+/* ── SCREEN TITLE ── */
+.stitle{font-family:'Orbitron',sans-serif;font-size:.75rem;color:#00e676;letter-spacing:2px;margin-bottom:14px;border-bottom:1px solid #1a1a1a;padding-bottom:8px;}
+
+/* ── REGISTER ── */
+.reg-step{font-size:.6rem;color:#444;letter-spacing:2px;margin-bottom:12px;text-align:right;}
+.field-label{font-size:.6rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.atm-input{width:100%;background:#0a0a0a;border:1px solid #222;color:#00e676;padding:9px 10px;font-family:'Share Tech Mono',monospace;font-size:.85rem;outline:none;margin-bottom:10px;transition:border-color .2s;}
+.atm-input:focus{border-color:#00e676;}
+.atm-input::placeholder{color:#2a2a2a;}
+.atm-select{width:100%;background:#0a0a0a;border:1px solid #222;color:#888;padding:9px 10px;font-family:'Share Tech Mono',monospace;font-size:.85rem;outline:none;margin-bottom:10px;}
+.atm-select:focus{border-color:#00e676;color:#00e676;}
+.atm-select option{background:#0a0a0a;}
+.acc-gen{background:#0a1a0f;border:1px solid #1a3a1a;padding:10px;margin-bottom:10px;}
+.acc-gen-label{font-size:.58rem;color:#555;letter-spacing:2px;margin-bottom:3px;}
+.acc-gen-num{font-family:'Orbitron',sans-serif;font-size:1rem;color:#00e676;letter-spacing:4px;}
+.bonus-info{background:#0a0f1a;border:1px solid #1a2a3a;padding:8px;font-size:.62rem;color:#00b0ff;margin-bottom:10px;text-align:center;}
+
+/* ── PIN PAD (registration) ── */
+.pin-row{display:flex;gap:6px;margin-bottom:10px;justify-content:center;}
+.pin-cell{width:40px;height:48px;background:#0a0a0a;border:1px solid #222;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#00e676;font-family:'Orbitron',sans-serif;}
+.pin-cell.filled{border-color:#00e676;}
+
+/* ── LOGIN ── */
+.login-field{background:#0a0a0a;border:1px solid #222;color:#00e676;padding:10px;font-family:'Share Tech Mono',monospace;font-size:.85rem;width:100%;outline:none;margin-bottom:10px;text-transform:uppercase;}
+.login-field:focus{border-color:#00e676;}
+.pin-display-big{background:#0a0a0a;border:1px solid #222;padding:12px;text-align:center;font-size:1.4rem;color:#00e676;letter-spacing:10px;margin-bottom:8px;min-height:50px;}
+.pin-hint-small{font-size:.58rem;color:#333;text-align:center;margin-bottom:8px;}
+.forgot-link{font-size:.6rem;color:#444;text-align:right;cursor:pointer;margin-bottom:8px;text-decoration:underline;}
+.forgot-link:hover{color:#00b0ff;}
+.attempts-warn{font-size:.6rem;color:#ff6b35;text-align:center;margin-bottom:6px;}
+
+/* ── SECURITY Q ── */
+.sq-display{background:#0a1a0f;border:1px solid #1a3a1a;padding:10px;margin-bottom:10px;font-size:.72rem;color:#00e676;}
+
+/* ── MENU ── */
+.menu-greet{font-size:.68rem;color:#555;margin-bottom:2px;}
+.menu-name{font-family:'Orbitron',sans-serif;font-size:.9rem;color:#00e676;margin-bottom:6px;letter-spacing:2px;}
+.menu-acc{font-size:.6rem;color:#333;margin-bottom:12px;}
+.menu-bal{background:#0a0a0a;border:1px solid #1a1a1a;padding:8px 10px;margin-bottom:12px;display:flex;justify-content:space-between;}
+.mb-item{text-align:center;}
+.mb-lbl{font-size:.55rem;color:#444;letter-spacing:1px;}
+.mb-val{font-family:'Orbitron',sans-serif;font-size:.78rem;color:#00e676;}
+.mb-val.sav{color:#00b0ff;}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.mb{background:#0d0d0d;border:1px solid #222;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;}
+.mb:hover{border-color:#00e676;background:#0a1a0f;}
+.mb-ico{font-size:1.1rem;display:block;margin-bottom:3px;}
+.mb-txt{font-size:.58rem;color:#666;letter-spacing:1px;text-transform:uppercase;}
+.mb:hover .mb-txt{color:#00e676;}
+
+/* ── BALANCE ── */
+.bal-card{background:#0a0a0a;border:1px solid #1a2a1a;padding:14px;margin-bottom:10px;}
+.bal-lbl{font-size:.58rem;color:#444;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.bal-num{font-family:'Orbitron',sans-serif;font-size:1.5rem;text-shadow:0 0 15px rgba(0,230,118,.2);}
+.bal-num.main{color:#00e676;}
+.bal-num.sav{color:#00b0ff;}
+.bal-rows{border-top:1px solid #111;padding-top:8px;}
+.brow{display:flex;justify-content:space-between;font-size:.65rem;padding:3px 0;border-bottom:1px solid #0d0d0d;}
+.brow .bk{color:#444;}.brow .bv{color:#888;}
+
+/* ── AMOUNT ── */
+.amt-lbl{font-size:.6rem;color:#555;letter-spacing:2px;margin-bottom:6px;}
+.amt-disp{background:#0a0a0a;border:1px solid #1a3a1a;padding:12px;font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#00e676;text-align:right;margin-bottom:10px;min-height:50px;letter-spacing:2px;}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;}
+.qb{background:#0d0d0d;border:1px solid #1e1e1e;padding:7px 4px;text-align:center;cursor:pointer;font-size:.65rem;color:#666;transition:all .2s;font-family:'Share Tech Mono',monospace;}
+.qb:hover{border-color:#00e676;color:#00e676;background:#0a1a0f;}
+
+/* ── SEND ── */
+.send-input{width:100%;background:#0a0a0a;border:1px solid #222;color:#00e676;padding:9px;font-family:'Share Tech Mono',monospace;font-size:.8rem;outline:none;margin-bottom:8px;letter-spacing:2px;}
+.send-input:focus{border-color:#00e676;}
+.recipient-box{background:#0a1a0f;border:1px solid #1a3a1a;padding:10px;margin-bottom:8px;}
+.rec-name{color:#00e676;font-size:.85rem;}
+.rec-acc{color:#444;font-size:.6rem;margin-top:2px;}
+
+/* ── HISTORY ── */
+.tx-scroll{max-height:265px;overflow-y:auto;}
+.tx-scroll::-webkit-scrollbar{width:2px;}
+.tx-scroll::-webkit-scrollbar-thumb{background:#1a1a1a;}
+.tx-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #0d0d0d;font-size:.68rem;}
+.tx-row:last-child{border:none;}
+.tx-lft .tx-type{color:#888;}
+.tx-lft .tx-dt{font-size:.55rem;color:#333;display:block;margin-top:1px;}
+.tx-amt{font-family:'Orbitron',sans-serif;font-size:.75rem;}
+.cr{color:#00e676;}.dr{color:#ff4757;}
+.no-tx{text-align:center;color:#333;font-size:.68rem;padding:24px 0;}
+
+/* ── SUCCESS ── */
+.suc-wrap{text-align:center;padding:8px 0;}
+.suc-ico{font-size:2.4rem;margin-bottom:8px;}
+.suc-title{font-family:'Orbitron',sans-serif;font-size:.85rem;color:#00e676;letter-spacing:3px;margin-bottom:6px;}
+.suc-amt{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.suc-msg{font-size:.62rem;color:#666;line-height:1.9;white-space:pre-line;margin-bottom:10px;}
+.suc-regards{font-size:.58rem;color:#00e676;letter-spacing:3px;border-top:1px solid #1a1a1a;padding-top:8px;}
+
+/* ── CHANGE PIN ── */
+.cp-step{font-size:.6rem;color:#444;text-align:right;margin-bottom:8px;}
+
+/* ── MSGS ── */
+.err{background:#150505;border:1px solid #3a1010;color:#ff4757;padding:7px 10px;font-size:.65rem;margin-bottom:8px;text-align:center;}
+.inf{background:#051505;border:1px solid #1a3a1a;color:#00e676;padding:7px 10px;font-size:.65rem;margin-bottom:8px;text-align:center;}
+.warn{background:#151005;border:1px solid #3a2a10;color:#ff9f43;padding:7px 10px;font-size:.65rem;margin-bottom:8px;text-align:center;}
+
+/* ── KEYPAD ── */
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;}
+.key{background:#181818;border:1px solid #252525;border-radius:5px;padding:11px 6px;text-align:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.85rem;color:#bbb;transition:all .15s;user-select:none;box-shadow:0 3px 0 #0a0a0a;}
+.key:hover{background:#202020;color:#00e676;border-color:#2a2a2a;}
+.key:active{transform:translateY(2px);box-shadow:none;}
+.key.clr{background:#150505;color:#ff4757;border-color:#251515;}
+.key.clr:hover{background:#200a0a;border-color:#ff4757;}
+.key.ok{background:#051505;color:#00e676;border-color:#152515;}
+.key.ok:hover{background:#0a2a0a;border-color:#00e676;}
+
+/* ── ACTION ROW ── */
+.act-row{display:flex;gap:6px;}
+.act-btn{flex:1;padding:10px 6px;border:1px solid #222;background:#0d0d0d;color:#666;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;transition:all .2s;text-align:center;}
+.act-btn:hover{border-color:#444;color:#aaa;}
+.act-btn.prim{border-color:rgba(0,230,118,.4);color:#00e676;background:#0a1a0f;}
+.act-btn.prim:hover{background:#0d2a12;}
+.act-btn.dng{border-color:rgba(255,71,87,.3);color:#ff4757;background:#150505;}
+.act-btn.dng:hover{background:#200a0a;}
+.act-btn.prnt{border-color:rgba(0,176,255,.3);color:#00b0ff;background:#05050f;}
+.act-btn.prnt:hover{background:#0a0a1a;}
+
+/* ── CASH SLOT ── */
+.cash-slot{background:#0d0d0d;border:2px solid #151515;border-radius:2px;height:5px;margin-top:10px;}
+
+/* ── STATUS ── */
+.status-bar{display:flex;justify-content:space-between;padding:7px 0 0;border-top:1px solid #151515;margin-top:6px;}
+.sdot{width:5px;height:5px;border-radius:50%;background:#00e676;display:inline-block;margin-right:4px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.2;}}
+.stxt{font-size:.5rem;color:#2a2a2a;letter-spacing:2px;}
+.stime{font-size:.5rem;color:#2a2a2a;}
+
+/* PRINT */
+.print-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;align-items:center;justify-content:center;}
+.print-overlay.open{display:flex;}
+.print-modal{background:#fff;width:290px;font-family:'Share Tech Mono',monospace;font-size:11px;color:#000;}
+.pm-body{padding:18px;}
+.pm-footer{display:flex;flex-direction:column;}
+.pm-btn{padding:11px;border:none;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:2px;}
+.pm-close{background:#111;color:#fff;}
+.pm-print{background:#005500;color:#fff;}
+@media print{body>*:not(.print-overlay){display:none!important;}.print-overlay{display:flex!important;position:static!important;background:none!important;}.print-modal{box-shadow:none!important;width:100%!important;}.pm-footer{display:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- PRINT MODAL -->
+<div class="print-overlay" id="printOverlay">
+  <div class="print-modal">
+    <div class="pm-body" id="printContent"></div>
+    <div class="pm-footer">
+      <button class="pm-btn pm-print" onclick="window.print()">🖨 PRINT SLIP</button>
+      <button class="pm-btn pm-close" onclick="closePrint()">✕ CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ATM -->
+<div class="atm">
+  <div class="atm-header">
+    <div class="atm-logo">MASIKA'S <span>ATM</span></div>
+    <div class="atm-tagline">Secure · Reliable · Always Available</div>
+  </div>
+  <div class="card-slot"></div>
+
+  <!-- SCREEN -->
+  <div class="atm-screen">
+    <div class="scanline"></div><div class="sglow"></div>
+
+    <!-- WELCOME -->
+    <div class="page active" id="pg-welcome">
+      <div class="w-time" id="atm-clock"></div>
+      <div class="w-icon">🏧</div>
+      <div class="w-title">MASIKA'S ATM</div>
+      <div class="w-sub">Your trusted banking partner<br>Secure · Fast · Reliable<br>Available 24 hours a day</div>
+      <div class="w-btns">
+        <div class="w-btn login" onclick="startLogin()"><span class="w-btn-icon">🔐</span><span class="w-btn-label">Login</span></div>
+        <div class="w-btn register" onclick="startRegister()"><span class="w-btn-icon">✨</span><span class="w-btn-label">Register</span></div>
+      </div>
+    </div>
+
+    <!-- REGISTER STEP 1 — NAME -->
+    <div class="page" id="pg-reg1">
+      <div class="stitle">✨ CREATE ACCOUNT</div>
+      <div class="reg-step">STEP 1 OF 4 — PERSONAL INFO</div>
+      <div class="field-label">Full Name</div>
+      <input class="atm-input" id="reg-name" type="text" placeholder="e.g. SECHABA KHOBOKO" style="text-transform:uppercase">
+      <div class="field-label">Security Question</div>
+      <select class="atm-select" id="reg-sq">
+        <option value="">— Select a question —</option>
+        <option value="pet">What is the name of your first pet?</option>
+        <option value="school">What primary school did you attend?</option>
+        <option value="mother">What is your mother's maiden name?</option>
+        <option value="city">What city were you born in?</option>
+        <option value="teacher">What was your favourite teacher's name?</option>
+      </select>
+      <div class="field-label">Your Answer</div>
+      <input class="atm-input" id="reg-sq-ans" type="text" placeholder="Your answer..." style="text-transform:uppercase">
+      <div id="reg1-err"></div>
+    </div>
+
+    <!-- REGISTER STEP 2 — ACCOUNT INFO -->
+    <div class="page" id="pg-reg2">
+      <div class="stitle">✨ CREATE ACCOUNT</div>
+      <div class="reg-step">STEP 2 OF 4 — ACCOUNT DETAILS</div>
+      <div class="field-label">Your Account Number (Auto-Generated)</div>
+      <div class="acc-gen"><div class="acc-gen-label">ACCOUNT NUMBER</div><div class="acc-gen-num" id="gen-accno">—</div></div>
+      <div class="bonus-info">🎁 WELCOME BONUS: M500.00 credited to your new account!</div>
+      <div class="field-label">Account Type</div>
+      <select class="atm-select" id="reg-acctype">
+        <option value="cheque">Cheque Account</option>
+        <option value="savings">Savings Account</option>
+        <option value="both" selected>Both (Cheque + Savings)</option>
+      </select>
+      <div id="reg2-err"></div>
+    </div>
+
+    <!-- REGISTER STEP 3 — CREATE PIN -->
+    <div class="page" id="pg-reg3">
+      <div class="stitle">✨ CREATE ACCOUNT</div>
+      <div class="reg-step">STEP 3 OF 4 — CREATE YOUR PIN</div>
+      <div class="field-label">Enter 4-Digit PIN</div>
+      <div class="pin-row" id="pin-cells-create">
+        <div class="pin-cell" id="pc0">_</div>
+        <div class="pin-cell" id="pc1">_</div>
+        <div class="pin-cell" id="pc2">_</div>
+        <div class="pin-cell" id="pc3">_</div>
+      </div>
+      <div class="field-label" style="margin-top:8px">Confirm PIN</div>
+      <div class="pin-row" id="pin-cells-confirm">
+        <div class="pin-cell" id="pcc0">_</div>
+        <div class="pin-cell" id="pcc1">_</div>
+        <div class="pin-cell" id="pcc2">_</div>
+        <div class="pin-cell" id="pcc3">_</div>
+      </div>
+      <div class="inf" style="margin-top:8px">Use keypad below to enter PIN</div>
+      <div id="reg3-err"></div>
+    </div>
+
+    <!-- REGISTER STEP 4 — SUCCESS -->
+    <div class="page" id="pg-reg4">
+      <div class="suc-wrap">
+        <div class="suc-ico">🎉</div>
+        <div class="suc-title">ACCOUNT CREATED!</div>
+        <div style="background:#0a1a0f;border:1px solid #1a3a1a;padding:12px;margin:10px 0;text-align:left;">
+          <div class="field-label">Account Number</div>
+          <div class="acc-gen-num" id="reg-done-accno" style="font-size:.9rem;margin-bottom:8px;"></div>
+          <div class="field-label">Account Holder</div>
+          <div style="color:#fff;font-size:.82rem;margin-bottom:8px;" id="reg-done-name"></div>
+          <div class="field-label">Opening Balance</div>
+          <div style="color:#00e676;font-family:'Orbitron',sans-serif;font-size:.9rem;">M 500.00</div>
+        </div>
+        <div style="font-size:.6rem;color:#444;line-height:1.8;">Please save your account number.<br>You will need it to login.</div>
+        <div class="suc-regards" style="margin-top:10px;">— WELCOME TO MASIKA'S ATM —</div>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="page" id="pg-login">
+      <div class="stitle">🔐 LOGIN</div>
+      <div class="field-label">Account Number</div>
+      <input class="login-field" id="login-accno" type="text" placeholder="Enter your account number..." maxlength="12" oninput="this.value=this.value.replace(/\D/g,'')">
+      <div class="field-label">PIN</div>
+      <div class="pin-display-big" id="login-pin-disp">_ _ _ _</div>
+      <div class="pin-hint-small">Use keypad below</div>
+      <div class="forgot-link" onclick="showPage('pg-forgot')">Forgot PIN? Click here</div>
+      <div id="login-attempts" class="attempts-warn"></div>
+      <div id="login-err"></div>
+    </div>
+
+    <!-- FORGOT PIN -->
+    <div class="page" id="pg-forgot">
+      <div class="stitle">🔑 FORGOT PIN</div>
+      <div class="field-label">Account Number</div>
+      <input class="login-field" id="forgot-accno" type="text" placeholder="Enter your account number..." maxlength="12" oninput="this.value=this.value.replace(/\D/g,'')">
+      <div id="forgot-sq-wrap" style="display:none">
+        <div class="sq-display" id="forgot-sq-text"></div>
+        <div class="field-label">Your Answer</div>
+        <input class="atm-input" id="forgot-sq-ans" type="text" placeholder="Your answer..." style="text-transform:uppercase">
+      </div>
+      <div id="forgot-err"></div>
+    </div>
+
+    <!-- NEW PIN (after forgot) -->
+    <div class="page" id="pg-newpin">
+      <div class="stitle">🔑 SET NEW PIN</div>
+      <div class="field-label">New 4-Digit PIN</div>
+      <div class="pin-row">
+        <div class="pin-cell" id="np0">_</div>
+        <div class="pin-cell" id="np1">_</div>
+        <div class="pin-cell" id="np2">_</div>
+        <div class="pin-cell" id="np3">_</div>
+      </div>
+      <div class="field-label" style="margin-top:8px">Confirm New PIN</div>
+      <div class="pin-row">
+        <div class="pin-cell" id="npc0">_</div>
+        <div class="pin-cell" id="npc1">_</div>
+        <div class="pin-cell" id="npc2">_</div>
+        <div class="pin-cell" id="npc3">_</div>
+      </div>
+      <div class="inf" style="margin-top:8px">Use keypad to enter new PIN</div>
+      <div id="newpin-err"></div>
+    </div>
+
+    <!-- MENU -->
+    <div class="page" id="pg-menu">
+      <div class="menu-greet">Welcome back,</div>
+      <div class="menu-name" id="menu-name">—</div>
+      <div class="menu-acc" id="menu-acc">Account: —</div>
+      <div class="menu-bal">
+        <div class="mb-item"><div class="mb-lbl">Main (M)</div><div class="mb-val" id="mb-main">0.00</div></div>
+        <div style="width:1px;background:#1a1a1a;"></div>
+        <div class="mb-item"><div class="mb-lbl">Savings (M)</div><div class="mb-val sav" id="mb-sav">0.00</div></div>
+      </div>
+      <div class="menu-grid">
+        <div class="mb" onclick="showPage('pg-balance')"><span class="mb-ico">💳</span><span class="mb-txt">Balance</span></div>
+        <div class="mb" onclick="goDeposit()"><span class="mb-ico">⬆️</span><span class="mb-txt">Deposit</span></div>
+        <div class="mb" onclick="goWithdraw()"><span class="mb-ico">⬇️</span><span class="mb-txt">Withdraw</span></div>
+        <div class="mb" onclick="showPage('pg-send')"><span class="mb-ico">📤</span><span class="mb-txt">Send</span></div>
+        <div class="mb" onclick="goSave()"><span class="mb-ico">🏦</span><span class="mb-txt">Save</span></div>
+        <div class="mb" onclick="showPage('pg-history')"><span class="mb-ico">📋</span><span class="mb-txt">History</span></div>
+        <div class="mb" onclick="showPage('pg-changepin')"><span class="mb-ico">🔑</span><span class="mb-txt">Change PIN</span></div>
+        <div class="mb" onclick="printMiniStatement()"><span class="mb-ico">🖨️</span><span class="mb-txt">Statement</span></div>
+        <div class="mb" onclick="logout()"><span class="mb-ico">🚪</span><span class="mb-txt">Logout</span></div>
+      </div>
+    </div>
+
+    <!-- BALANCE -->
+    <div class="page" id="pg-balance">
+      <div class="stitle">💳 ACCOUNT BALANCE</div>
+      <div class="bal-card"><div class="bal-lbl">Main / Cheque Account</div><div class="bal-num main" id="bal-main">M 0.00</div></div>
+      <div class="bal-card"><div class="bal-lbl">Savings Account</div><div class="bal-num sav" id="bal-sav">M 0.00</div></div>
+      <div class="bal-rows">
+        <div class="brow"><span class="bk">Account No.</span><span class="bv" id="bal-accno">—</span></div>
+        <div class="brow"><span class="bk">Account Type</span><span class="bv" id="bal-type">—</span></div>
+        <div class="brow"><span class="bk">Status</span><span class="bv" style="color:#00e676">● ACTIVE</span></div>
+      </div>
+    </div>
+
+    <!-- DEPOSIT -->
+    <div class="page" id="pg-deposit">
+      <div class="stitle">⬆️ DEPOSIT CASH</div>
+      <div class="amt-lbl">SELECT OR ENTER AMOUNT (M)</div>
+      <div class="amt-disp" id="dep-disp">0.00</div>
+      <div class="quick-grid">
+        <div class="qb" onclick="qa('dep',100)">M100</div><div class="qb" onclick="qa('dep',200)">M200</div>
+        <div class="qb" onclick="qa('dep',500)">M500</div><div class="qb" onclick="qa('dep',1000)">M1,000</div>
+        <div class="qb" onclick="qa('dep',2000)">M2,000</div><div class="qb" onclick="qa('dep',5000)">M5,000</div>
+      </div>
+      <div id="dep-err"></div>
+    </div>
+
+    <!-- WITHDRAW -->
+    <div class="page" id="pg-withdraw">
+      <div class="stitle">⬇️ WITHDRAW CASH</div>
+      <div class="amt-lbl">SELECT OR ENTER AMOUNT (M)</div>
+      <div class="amt-disp" id="wdr-disp">0.00</div>
+      <div class="quick-grid">
+        <div class="qb" onclick="qa('wdr',50)">M50</div><div class="qb" onclick="qa('wdr',100)">M100</div>
+        <div class="qb" onclick="qa('wdr',200)">M200</div><div class="qb" onclick="qa('wdr',500)">M500</div>
+        <div class="qb" onclick="qa('wdr',1000)">M1,000</div><div class="qb" onclick="qa('wdr',2000)">M2,000</div>
+      </div>
+      <div id="wdr-err"></div>
+    </div>
+
+    <!-- SEND -->
+    <div class="page" id="pg-send">
+      <div class="stitle">📤 SEND MONEY</div>
+      <div class="amt-lbl">RECIPIENT ACCOUNT NUMBER</div>
+      <input class="send-input" id="snd-accno" type="text" placeholder="Enter account number..." maxlength="12" oninput="lookupRec()">
+      <div id="rec-info"></div>
+      <div class="amt-lbl">AMOUNT (M)</div>
+      <div class="amt-disp" id="snd-disp">0.00</div>
+      <div id="snd-err"></div>
+    </div>
+
+    <!-- SAVE -->
+    <div class="page" id="pg-save">
+      <div class="stitle">🏦 TRANSFER TO SAVINGS</div>
+      <div class="amt-lbl">AMOUNT TO SAVE (M)</div>
+      <div class="amt-disp" id="sav-disp">0.00</div>
+      <div class="quick-grid">
+        <div class="qb" onclick="qa('sav',100)">M100</div><div class="qb" onclick="qa('sav',200)">M200</div>
+        <div class="qb" onclick="qa('sav',500)">M500</div><div class="qb" onclick="qa('sav',1000)">M1,000</div>
+        <div class="qb" onclick="qa('sav',2000)">M2,000</div><div class="qb" onclick="qa('sav',5000)">M5,000</div>
+      </div>
+      <div id="sav-err"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="page" id="pg-history">
+      <div class="stitle">📋 TRANSACTION HISTORY</div>
+      <div class="tx-scroll" id="tx-list"></div>
+    </div>
+
+    <!-- CHANGE PIN -->
+    <div class="page" id="pg-changepin">
+      <div class="stitle">🔑 CHANGE PIN</div>
+      <div class="cp-step" id="cp-step">Step 1: Enter current PIN</div>
+      <div class="pin-row">
+        <div class="pin-cell" id="cp0">_</div><div class="pin-cell" id="cp1">_</div>
+        <div class="pin-cell" id="cp2">_</div><div class="pin-cell" id="cp3">_</div>
+      </div>
+      <div id="cp-sub" style="margin-top:10px;display:none;">
+        <div class="field-label" style="margin-top:8px">New PIN</div>
+        <div class="pin-row">
+          <div class="pin-cell" id="cpn0">_</div><div class="pin-cell" id="cpn1">_</div>
+          <div class="pin-cell" id="cpn2">_</div><div class="pin-cell" id="cpn3">_</div>
+        </div>
+        <div class="field-label" style="margin-top:8px">Confirm New PIN</div>
+        <div class="pin-row">
+          <div class="pin-cell" id="cpnc0">_</div><div class="pin-cell" id="cpnc1">_</div>
+          <div class="pin-cell" id="cpnc2">_</div><div class="pin-cell" id="cpnc3">_</div>
+        </div>
+      </div>
+      <div id="cp-err"></div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="page" id="pg-success">
+      <div class="suc-wrap">
+        <div class="suc-ico" id="suc-ico">✅</div>
+        <div class="suc-title" id="suc-title">TRANSACTION COMPLETE</div>
+        <div class="suc-amt" id="suc-amt"></div>
+        <div class="suc-msg" id="suc-msg"></div>
+        <div class="suc-regards">— REGARDS, MASIKA'S ATM —</div>
+      </div>
+    </div>
+
+  </div><!-- end screen -->
+
+  <!-- KEYPAD -->
+  <div class="keypad">
+    <div class="key" onclick="kp('1')">1</div>
+    <div class="key" onclick="kp('2')">2 ABC</div>
+    <div class="key" onclick="kp('3')">3 DEF</div>
+    <div class="key" onclick="kp('4')">4 GHI</div>
+    <div class="key" onclick="kp('5')">5 JKL</div>
+    <div class="key" onclick="kp('6')">6 MNO</div>
+    <div class="key" onclick="kp('7')">7 PQR</div>
+    <div class="key" onclick="kp('8')">8 TUV</div>
+    <div class="key" onclick="kp('9')">9 WXY</div>
+    <div class="key clr" onclick="kp('clr')">CLR</div>
+    <div class="key" onclick="kp('0')">0</div>
+    <div class="key ok" onclick="kp('ok')">OK ↵</div>
+  </div>
+
+  <!-- ACTION ROW -->
+  <div class="act-row" id="act-row">
+    <div class="act-btn dng" onclick="kp('cancel')">✕ CANCEL</div>
+    <div class="act-btn" onclick="kp('back')">← BACK</div>
+    <div class="act-btn prim" onclick="kp('confirm')">CONFIRM ✓</div>
+  </div>
+
+  <div class="cash-slot"></div>
+  <div class="status-bar">
+    <div><span class="sdot"></span><span class="stxt">SYSTEM ONLINE · MASIKA'S ATM</span></div>
+    <div class="stime" id="stime"></div>
+  </div>
+</div>
+
+<script>
+// ── STORAGE ──
+function loadAccounts(){ return JSON.parse(localStorage.getItem('masika_accounts')||'{}'); }
+function saveAccounts(a){ localStorage.setItem('masika_accounts',JSON.stringify(a)); }
+function loadTx(accno){ return JSON.parse(localStorage.getItem('masika_tx_'+accno)||'[]'); }
+function saveTx(accno,tx){ localStorage.setItem('masika_tx_'+accno,JSON.stringify(tx)); }
+
+// ── STATE ──
+let currentAcc = null;
+let currentPage = 'pg-welcome';
+let pinBuf = '';
+let amtBuf = '';
+let sendRec = null;
+let lastTx = null;
+let loginAttempts = 0;
+let regData = {};
+let pinMode = ''; // create|confirm|login|cp-cur|cp-new|cp-conf|np-new|np-conf
+let pinStage = '';
+let cpCurrent = '';
+let cpNew = '';
+let npAccno = '';
+
+// ── CLOCK ──
+function tick(){
+  const n=new Date();
+  const t=n.toLocaleTimeString('en-GB');
+  const d=n.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('atm-clock').textContent=d+' | '+t;
+  document.getElementById('stime').textContent=t;
+}
+tick(); setInterval(tick,1000);
+
+// ── PAGE ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  currentPage=id; amtBuf=''; pinBuf='';
+  clearErrs();
+  if(id==='pg-menu') updateMenu();
+  if(id==='pg-balance') updateBalance();
+  if(id==='pg-history') renderTx();
+  if(id==='pg-send'){ document.getElementById('snd-disp').textContent='0.00'; document.getElementById('snd-accno').value=''; document.getElementById('rec-info').innerHTML=''; sendRec=null; }
+  updateAmtDisp();
+}
+
+// ── GEN ACCOUNT NUMBER ──
+function genAccNo(){
+  const accounts = loadAccounts();
+  let num;
+  do { num = '6'+ Math.floor(Math.random()*90000000+10000000).toString(); }
+  while(accounts[num]);
+  return num;
+}
+
+// ── REGISTER FLOW ──
+function startRegister(){
+  regData={};
+  pinBuf=''; pinMode='create';
+  document.getElementById('reg-name').value='';
+  document.getElementById('reg-sq').value='';
+  document.getElementById('reg-sq-ans').value='';
+  showPage('pg-reg1');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-welcome')},
+    {cls:'',label:'← BACK',cb:()=>showPage('pg-welcome')},
+    {cls:'prim',label:'NEXT →',cb:reg1Next}
+  ]);
+}
+
+function reg1Next(){
+  const name=document.getElementById('reg-name').value.trim().toUpperCase();
+  const sq=document.getElementById('reg-sq').value;
+  const ans=document.getElementById('reg-sq-ans').value.trim().toUpperCase();
+  if(!name||name.length<2){showErr('reg1-err','⚠ Please enter your full name');return;}
+  if(!sq){showErr('reg1-err','⚠ Please select a security question');return;}
+  if(!ans||ans.length<2){showErr('reg1-err','⚠ Please provide your answer');return;}
+  regData.name=name; regData.sq=sq; regData.sqAns=ans;
+  regData.accNo=genAccNo();
+  document.getElementById('gen-accno').textContent=regData.accNo;
+  showPage('pg-reg2');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-welcome')},
+    {cls:'',label:'← BACK',cb:startRegister},
+    {cls:'prim',label:'NEXT →',cb:reg2Next}
+  ]);
+}
+
+function reg2Next(){
+  regData.accType=document.getElementById('reg-acctype').value;
+  pinBuf=''; updatePinCells('create','');
+  document.getElementById('reg3-err').innerHTML='';
+  pinMode='create'; pinStage='first';
+  showPage('pg-reg3');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-welcome')},
+    {cls:'',label:'← BACK',cb:()=>{showPage('pg-reg2');setActRow([{cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-welcome')},{cls:'',label:'← BACK',cb:startRegister},{cls:'prim',label:'NEXT →',cb:reg2Next}]);}},
+    {cls:'prim',label:'CONFIRM ✓',cb:reg3Confirm}
+  ]);
+}
+
+function reg3Confirm(){
+  const cells1=[...document.querySelectorAll('#pin-cells-create .pin-cell')].map(c=>c.dataset.val||'').join('');
+  const cells2=[...document.querySelectorAll('#pin-cells-confirm .pin-cell')].map(c=>c.dataset.val||'').join('');
+  if(cells1.length<4){showErr('reg3-err','⚠ Please enter a 4-digit PIN');return;}
+  if(cells1!==cells2){showErr('reg3-err','⚠ PINs do not match. Try again.');updatePinCells('create','');updatePinCells('confirm','');pinBuf='';pinStage='first';return;}
+  regData.pin=cells1;
+  // Save account
+  const accounts=loadAccounts();
+  accounts[regData.accNo]={
+    name:regData.name, pin:regData.pin, accNo:regData.accNo,
+    accType:regData.accType, sq:regData.sq, sqAns:regData.sqAns,
+    balance:500.00, savings:0.00, created:new Date().toLocaleString()
+  };
+  saveAccounts(accounts);
+  // Record opening tx
+  const tx=[{type:'OPENING BONUS',amount:500,balance:500,note:'Welcome bonus',time:new Date().toLocaleString(),ref:'REF'+Date.now()}];
+  saveTx(regData.accNo,tx);
+  document.getElementById('reg-done-accno').textContent=regData.accNo;
+  document.getElementById('reg-done-name').textContent=regData.name;
+  showPage('pg-reg4');
+  setActRow([{cls:'prim',label:'▶ PROCEED TO LOGIN',cb:startLogin}]);
+}
+
+// ── LOGIN FLOW ──
+function startLogin(){
+  pinBuf=''; loginAttempts=0; pinMode='login';
+  document.getElementById('login-accno').value='';
+  document.getElementById('login-pin-disp').textContent='_ _ _ _';
+  document.getElementById('login-attempts').textContent='';
+  showPage('pg-login');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-welcome')},
+    {cls:'',label:'← BACK',cb:()=>showPage('pg-welcome')},
+    {cls:'prim',label:'LOGIN ✓',cb:doLogin}
+  ]);
+}
+
+function doLogin(){
+  const accno=document.getElementById('login-accno').value.trim();
+  const accounts=loadAccounts();
+  if(!accno||!accounts[accno]){showErr('login-err','⚠ Account not found. Check your number.');return;}
+  const acc=accounts[accno];
+  if(acc.frozen){showErr('login-err','🔒 Account frozen. Please visit a branch.');return;}
+  if(pinBuf!==acc.pin){
+    loginAttempts++;
+    const rem=3-loginAttempts;
+    if(loginAttempts>=3){
+      acc.frozen=true; saveAccounts(accounts);
+      showErr('login-err','🔒 Account FROZEN after 3 failed attempts.');
+      document.getElementById('login-attempts').textContent='';
+      return;
+    }
+    showErr('login-err','⚠ Incorrect PIN.');
+    document.getElementById('login-attempts').textContent=`⚠ ${rem} attempt(s) remaining`;
+    pinBuf=''; updateLoginPin();
+    return;
+  }
+  currentAcc=acc; loginAttempts=0;
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-menu')},
+    {cls:'',label:'← BACK',cb:()=>showPage('pg-menu')},
+    {cls:'prim',label:'CONFIRM ✓',cb:()=>kp('confirm')}
+  ]);
+  showPage('pg-menu');
+}
+
+// ── FORGOT PIN ──
+function setupForgot(){
+  pinBuf=''; pinMode=''; npAccno='';
+  document.getElementById('forgot-accno').value='';
+  document.getElementById('forgot-sq-ans').value='';
+  document.getElementById('forgot-sq-wrap').style.display='none';
+  showPage('pg-forgot');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:startLogin},
+    {cls:'',label:'← BACK',cb:startLogin},
+    {cls:'prim',label:'VERIFY ✓',cb:doForgot}
+  ]);
+}
+
+function doForgot(){
+  const accno=document.getElementById('forgot-accno').value.trim();
+  const accounts=loadAccounts();
+  if(!accno||!accounts[accno]){showErr('forgot-err','⚠ Account not found.');return;}
+  const acc=accounts[accno];
+  const sqMap={pet:'What is the name of your first pet?',school:'What primary school did you attend?',mother:"What is your mother's maiden name?",city:'What city were you born in?',teacher:"What was your favourite teacher's name?"};
+  const sqWrap=document.getElementById('forgot-sq-wrap');
+  if(sqWrap.style.display==='none'){
+    document.getElementById('forgot-sq-text').textContent=sqMap[acc.sq]||acc.sq;
+    sqWrap.style.display='block'; return;
+  }
+  const ans=document.getElementById('forgot-sq-ans').value.trim().toUpperCase();
+  if(ans!==acc.sqAns){showErr('forgot-err','⚠ Incorrect answer.');return;}
+  npAccno=accno; pinBuf=''; pinStage='first'; pinMode='np-new';
+  updateNewPinCells('np','');updateNewPinCells('npc','');
+  showPage('pg-newpin');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:startLogin},
+    {cls:'',label:'← BACK',cb:setupForgot},
+    {cls:'prim',label:'SET PIN ✓',cb:doNewPin}
+  ]);
+}
+
+function doNewPin(){
+  const p1=[...document.querySelectorAll('[id^="np"][id$="0"],[id^="np"][id$="1"],[id^="np"][id$="2"],[id^="np"][id$="3"]')].filter(e=>!e.id.startsWith('npc')).map(e=>e.dataset.val||'').join('');
+  const p2=['npc0','npc1','npc2','npc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+  if(p1.length<4){showErr('newpin-err','⚠ Enter new 4-digit PIN');return;}
+  if(p1!==p2){showErr('newpin-err','⚠ PINs do not match');updateNewPinCells('np','');updateNewPinCells('npc','');pinBuf='';return;}
+  const accounts=loadAccounts();
+  accounts[npAccno].pin=p1;
+  if(accounts[npAccno].frozen) accounts[npAccno].frozen=false;
+  saveAccounts(accounts);
+  showSuccessScreen('🔑','PIN CHANGED!','','Your PIN has been successfully updated.\nYou can now login with your new PIN.');
+}
+
+// ── MENU ──
+function updateMenu(){
+  if(!currentAcc) return;
+  document.getElementById('menu-name').textContent=currentAcc.name;
+  document.getElementById('menu-acc').textContent='ACC: '+currentAcc.accNo;
+  document.getElementById('mb-main').textContent=fmt(currentAcc.balance);
+  document.getElementById('mb-sav').textContent=fmt(currentAcc.savings);
+  setActRow([
+    {cls:'dng',label:'✕ LOGOUT',cb:logout},
+    {cls:'',label:'← BACK',cb:()=>showPage('pg-menu')},
+    {cls:'prim',label:'CONFIRM ✓',cb:()=>kp('confirm')}
+  ]);
+}
+
+function updateBalance(){
+  if(!currentAcc) return;
+  document.getElementById('bal-main').textContent='M '+fmt(currentAcc.balance);
+  document.getElementById('bal-sav').textContent='M '+fmt(currentAcc.savings);
+  document.getElementById('bal-accno').textContent=currentAcc.accNo;
+  const typeMap={cheque:'Cheque',savings:'Savings',both:'Cheque + Savings'};
+  document.getElementById('bal-type').textContent=typeMap[currentAcc.accType]||'Standard';
+}
+
+function goDeposit(){ amtBuf=''; showPage('pg-deposit'); setTxActRow('dep'); }
+function goWithdraw(){ amtBuf=''; showPage('pg-withdraw'); setTxActRow('wdr'); }
+function goSave(){ amtBuf=''; showPage('pg-save'); setTxActRow('sav'); }
+
+function setTxActRow(type){
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-menu')},
+    {cls:'',label:'CLR',cb:()=>{amtBuf='';updateAmtDisp();}},
+    {cls:'prim',label:'CONFIRM ✓',cb:()=>processTx(type)}
+  ]);
+}
+
+// ── AMOUNT ──
+function qa(type,val){ amtBuf=val.toString(); updateAmtDisp(); }
+function updateAmtDisp(){
+  const map={'pg-deposit':'dep-disp','pg-withdraw':'wdr-disp','pg-save':'sav-disp','pg-send':'snd-disp'};
+  const elId=map[currentPage];
+  if(elId){ const el=document.getElementById(elId); if(el) el.textContent=amtBuf?parseFloat(amtBuf).toFixed(2):'0.00'; }
+}
+
+// ── SEND ──
+function lookupRec(){
+  const accno=document.getElementById('snd-accno').value.trim();
+  const el=document.getElementById('rec-info');
+  sendRec=null;
+  if(accno.length>=9){
+    const accounts=loadAccounts();
+    const found=accounts[accno];
+    if(found&&found.accNo!==currentAcc.accNo){
+      sendRec=found;
+      el.innerHTML=`<div class="recipient-box"><div class="rec-name">✅ ${found.name}</div><div class="rec-acc">Account: ${found.accNo}</div></div>`;
+    } else if(found&&found.accNo===currentAcc.accNo){
+      el.innerHTML=`<div class="err">Cannot send to your own account</div>`;
+    } else {
+      el.innerHTML=`<div class="err">Account not found</div>`;
+    }
+  } else { el.innerHTML=''; }
+}
+
+// ── PROCESS TX ──
+function processTx(type){
+  const amt=parseFloat(amtBuf);
+  if(!amt||amt<=0){ showErr(type+'-err','⚠ Please enter a valid amount'); return; }
+
+  if(type==='dep'){
+    currentAcc.balance+=amt;
+    recordTx('DEPOSIT',amt,'Cash deposit');
+    syncAcc();
+    showSuccessScreen('⬆️','DEPOSIT SUCCESSFUL',amt,`M${fmt(amt)} deposited to your account.\nNew Balance: M${fmt(currentAcc.balance)}`);
+
+  } else if(type==='wdr'){
+    if(amt>currentAcc.balance){ showErr('wdr-err','⚠ INSUFFICIENT FUNDS'); return; }
+    if(amt%50!==0){ showErr('wdr-err','⚠ Must be a multiple of M50'); return; }
+    currentAcc.balance-=amt;
+    recordTx('WITHDRAWAL',-amt,'Cash withdrawal');
+    syncAcc();
+    showSuccessScreen('⬇️','WITHDRAWAL SUCCESSFUL',amt,`M${fmt(amt)} dispensed.\nNew Balance: M${fmt(currentAcc.balance)}\n\nPlease collect your cash below.`);
+
+  } else if(type==='sav'){
+    if(amt>currentAcc.balance){ showErr('sav-err','⚠ INSUFFICIENT FUNDS'); return; }
+    currentAcc.balance-=amt; currentAcc.savings+=amt;
+    recordTx('TRANSFER TO SAVINGS',-amt,'Moved to savings');
+    syncAcc();
+    showSuccessScreen('🏦','TRANSFER SUCCESSFUL',amt,`M${fmt(amt)} moved to Savings.\nMain: M${fmt(currentAcc.balance)}\nSavings: M${fmt(currentAcc.savings)}`);
+
+  } else if(type==='snd'){
+    if(!sendRec){ showErr('snd-err','⚠ Enter a valid recipient account'); return; }
+    if(amt>currentAcc.balance){ showErr('snd-err','⚠ INSUFFICIENT FUNDS'); return; }
+    currentAcc.balance-=amt;
+    const accounts=loadAccounts();
+    accounts[sendRec.accNo].balance+=amt;
+    accounts[currentAcc.accNo]=currentAcc;
+    saveAccounts(accounts);
+    recordTx('SENT TO '+sendRec.name,-amt,'Sent to '+sendRec.accNo);
+    // Record for recipient
+    const recTx=loadTx(sendRec.accNo);
+    recTx.unshift({type:'RECEIVED FROM '+currentAcc.name,amount:amt,balance:accounts[sendRec.accNo].balance,note:'From '+currentAcc.accNo,time:new Date().toLocaleString(),ref:'REF'+Date.now()});
+    saveTx(sendRec.accNo,recTx);
+    showSuccessScreen('📤','TRANSFER SUCCESSFUL',amt,`M${fmt(amt)} sent to\n${sendRec.name}\nAcc: ${sendRec.accNo}\n\nNew Balance: M${fmt(currentAcc.balance)}`);
+  }
+}
+
+// ── CHANGE PIN ──
+function setupChangePin(){
+  pinBuf=''; pinStage='cur'; pinMode='cp';
+  document.getElementById('cp-step').textContent='Step 1: Enter your CURRENT PIN';
+  document.getElementById('cp-sub').style.display='none';
+  updateCPCells('cp',''); updateCPCells('cpn',''); updateCPCells('cpnc','');
+  showPage('pg-changepin');
+  setActRow([
+    {cls:'dng',label:'✕ CANCEL',cb:()=>showPage('pg-menu')},
+    {cls:'',label:'← BACK',cb:()=>showPage('pg-menu')},
+    {cls:'prim',label:'CONFIRM ✓',cb:doChangePin}
+  ]);
+}
+
+function doChangePin(){
+  if(pinStage==='cur'){
+    if(pinBuf!==currentAcc.pin){ showErr('cp-err','⚠ Incorrect current PIN'); pinBuf=''; updateCPCells('cp',''); return; }
+    cpCurrent=pinBuf; pinBuf=''; pinStage='new';
+    document.getElementById('cp-step').textContent='Step 2: Enter NEW PIN';
+    document.getElementById('cp-sub').style.display='block';
+    updateCPCells('cpn',''); updateCPCells('cpnc','');
+    return;
+  }
+  if(pinStage==='new'){
+    const np=['cpn0','cpn1','cpn2','cpn3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+    const nc=['cpnc0','cpnc1','cpnc2','cpnc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+    if(np.length<4){ showErr('cp-err','⚠ Enter new 4-digit PIN'); return; }
+    if(np!==nc){ showErr('cp-err','⚠ New PINs do not match'); updateCPCells('cpn',''); updateCPCells('cpnc',''); pinBuf=''; return; }
+    if(np===cpCurrent){ showErr('cp-err','⚠ New PIN must differ from current PIN'); return; }
+    currentAcc.pin=np; syncAcc();
+    showSuccessScreen('🔑','PIN CHANGED!','','Your PIN has been successfully updated.');
+  }
+}
+
+// ── SYNC ACCOUNT ──
+function syncAcc(){
+  const accounts=loadAccounts();
+  accounts[currentAcc.accNo]=currentAcc;
+  saveAccounts(accounts);
+}
+
+// ── RECORD TX ──
+function recordTx(type,amt,note){
+  const tx=loadTx(currentAcc.accNo);
+  tx.unshift({type,amount:amt,balance:currentAcc.balance,note,time:new Date().toLocaleString(),ref:'REF'+Date.now()});
+  if(tx.length>100) tx.pop();
+  saveTx(currentAcc.accNo,tx);
+  lastTx={type,amount:Math.abs(amt),time:new Date().toLocaleString()};
+}
+
+// ── RENDER TX ──
+function renderTx(){
+  const tx=loadTx(currentAcc.accNo);
+  const el=document.getElementById('tx-list');
+  if(!tx.length){ el.innerHTML='<div class="no-tx">No transactions yet</div>'; return; }
+  el.innerHTML=tx.slice(0,20).map(t=>`
+    <div class="tx-row">
+      <div class="tx-lft">
+        <span class="tx-type">${t.type}</span>
+        <span class="tx-dt">${t.time}</span>
+      </div>
+      <div class="tx-amt ${t.amount>=0?'cr':'dr'}">
+        ${t.amount>=0?'+':'-'}M${fmt(Math.abs(t.amount))}
+      </div>
+    </div>`).join('');
+}
+
+// ── SUCCESS SCREEN ──
+function showSuccessScreen(ico,title,amt,msg){
+  document.getElementById('suc-ico').textContent=ico;
+  document.getElementById('suc-title').textContent=title;
+  document.getElementById('suc-amt').textContent=amt?'M '+fmt(amt):'';
+  document.getElementById('suc-msg').textContent=msg;
+  lastTx={ico,title,amount:amt,msg,time:new Date().toLocaleString()};
+  showPage('pg-success');
+  setActRow([
+    {cls:'prnt',label:'🖨 PRINT SLIP',cb:printSlip},
+    {cls:'prim',label:'CONTINUE ▶',cb:()=>{ showPage('pg-menu'); updateMenu(); }}
+  ]);
+}
+
+// ── PRINT ──
+function printSlip(){
+  if(!lastTx||!currentAcc) return;
+  const now=new Date();
+  document.getElementById('printContent').innerHTML=`
+    <div style="text-align:center;line-height:1.8;font-size:12px;">
+      <div style="font-size:18px;font-weight:bold;letter-spacing:2px;">MASIKA'S ATM</div>
+      <div style="font-size:9px;color:#666;margin-bottom:8px;letter-spacing:3px;">TRANSACTION RECEIPT</div>
+      <div style="border-top:1px dashed #000;border-bottom:1px dashed #000;padding:6px 0;margin:6px 0;text-align:left;">
+        <div style="display:flex;justify-content:space-between"><span>Date:</span><span>${now.toLocaleDateString()}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Time:</span><span>${now.toLocaleTimeString()}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Ref:</span><span>REF${Date.now()}</span></div>
+      </div>
+      <div style="border-bottom:1px dashed #000;padding:6px 0;margin-bottom:6px;text-align:left;">
+        <div style="display:flex;justify-content:space-between"><span>Account:</span><span>${currentAcc.accNo}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Name:</span><span>${currentAcc.name}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Type:</span><span>${lastTx.title||'TRANSACTION'}</span></div>
+      </div>
+      ${lastTx.amount?`<div style="padding:8px 0;border-bottom:1px dashed #000;margin-bottom:6px;"><div style="font-size:10px;color:#666">AMOUNT</div><div style="font-size:24px;font-weight:bold;">M ${fmt(lastTx.amount)}</div></div>`:''}
+      <div style="text-align:left;">
+        <div style="display:flex;justify-content:space-between"><span>Main Bal:</span><span>M${fmt(currentAcc.balance)}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Savings:</span><span>M${fmt(currentAcc.savings)}</span></div>
+      </div>
+      <div style="border-top:1px dashed #000;margin-top:10px;padding-top:8px;font-size:9px;color:#666;">
+        Thank you for banking with<br>
+        <strong style="font-size:11px;">MASIKA'S ATM</strong><br>
+        — Regards, Masika's ATM —
+      </div>
+    </div>`;
+  document.getElementById('printOverlay').classList.add('open');
+}
+
+function printMiniStatement(){
+  if(!currentAcc) return;
+  const tx=loadTx(currentAcc.accNo).slice(0,5);
+  const now=new Date();
+  document.getElementById('printContent').innerHTML=`
+    <div style="text-align:center;line-height:1.7;font-size:11px;">
+      <div style="font-size:16px;font-weight:bold;letter-spacing:2px;">MASIKA'S ATM</div>
+      <div style="font-size:9px;color:#666;margin-bottom:6px;">MINI STATEMENT</div>
+      <div style="text-align:left;border-top:1px dashed #000;padding:4px 0;margin:4px 0;">
+        <div>Account: ${currentAcc.accNo}</div>
+        <div>Name: ${currentAcc.name}</div>
+        <div>Date: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}</div>
+      </div>
+      <div style="border-top:1px dashed #000;margin:4px 0;"></div>
+      ${tx.map(t=>`<div style="display:flex;justify-content:space-between;text-align:left;font-size:9px;border-bottom:1px solid #eee;padding:3px 0;">
+        <span>${t.type.substring(0,18)}<br><span style="color:#999;font-size:8px">${t.time}</span></span>
+        <span style="font-weight:bold;color:${t.amount>=0?'green':'red'}">${t.amount>=0?'+':'-'}M${fmt(Math.abs(t.amount))}</span>
+      </div>`).join('')}
+      <div style="margin-top:6px;text-align:left;border-top:1px dashed #000;padding-top:4px;">
+        <div style="display:flex;justify-content:space-between"><strong>Main Balance:</strong><strong>M${fmt(currentAcc.balance)}</strong></div>
+        <div style="display:flex;justify-content:space-between"><strong>Savings:</strong><strong>M${fmt(currentAcc.savings)}</strong></div>
+      </div>
+      <div style="margin-top:8px;font-size:8px;color:#999;">— Regards, Masika's ATM —</div>
+    </div>`;
+  document.getElementById('printOverlay').classList.add('open');
+}
+
+function closePrint(){ document.getElementById('printOverlay').classList.remove('open'); }
+
+// ── LOGOUT ──
+function logout(){ currentAcc=null; pinBuf=''; amtBuf=''; showPage('pg-welcome'); }
+
+// ── FORMAT ──
+function fmt(n){ return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+// ── ERRORS ──
+function clearErrs(){ document.querySelectorAll('.err,.warn,.inf').forEach(e=>{if(e.id&&e.id.endsWith('-err')) e.innerHTML='';}); }
+function showErr(id,msg){ const el=document.getElementById(id); if(el) el.innerHTML=`<div class="err">${msg}</div>`; }
+
+// ── PIN CELLS ──
+function updatePinCells(type,buf){
+  const pfx=type==='create'?'pc':'pcc';
+  for(let i=0;i<4;i++){
+    const el=document.getElementById(pfx+i);
+    if(el){ el.textContent=i<buf.length?'●':'_'; el.dataset.val=i<buf.length?buf[i]:''; el.className='pin-cell'+(i<buf.length?' filled':''); }
+  }
+}
+function updateNewPinCells(pfx,buf){
+  for(let i=0;i<4;i++){
+    const el=document.getElementById(pfx+i);
+    if(el){ el.textContent=i<buf.length?'●':'_'; el.dataset.val=i<buf.length?buf[i]:''; el.className='pin-cell'+(i<buf.length?' filled':''); }
+  }
+}
+function updateCPCells(pfx,buf){
+  for(let i=0;i<4;i++){
+    const el=document.getElementById(pfx+i);
+    if(el){ el.textContent=i<buf.length?'●':'_'; el.dataset.val=i<buf.length?buf[i]:''; el.className='pin-cell'+(i<buf.length?' filled':''); }
+  }
+}
+function updateLoginPin(){
+  const dots=pinBuf.split('').map(()=>'●').join(' ');
+  const blanks=Array(4-pinBuf.length).fill('_').join(' ');
+  document.getElementById('login-pin-disp').textContent=(dots+(dots&&blanks?' ':'')+blanks)||'_ _ _ _';
+}
+
+// ── ACTION ROW ──
+function setActRow(btns){
+  document.getElementById('act-row').innerHTML=btns.map(b=>`<div class="act-btn ${b.cls}" onclick="(${b.cb.toString()})()">${b.label}</div>`).join('');
+}
+
+// ── KEYPAD ──
+function kp(key){
+  // AMOUNT PAGES
+  const amtPages=['pg-deposit','pg-withdraw','pg-save','pg-send'];
+  if(amtPages.includes(currentPage)){
+    if(key==='cancel'){showPage('pg-menu');return;}
+    if(key==='back'||key==='clr'){amtBuf='';updateAmtDisp();return;}
+    if(key==='ok'||key==='confirm'){
+      const map={'pg-deposit':'dep','pg-withdraw':'wdr','pg-save':'sav','pg-send':'snd'};
+      processTx(map[currentPage]); return;
+    }
+    if(!isNaN(key)&&key!=='ok'){
+      if(key==='0'&&amtBuf==='') return;
+      if(amtBuf.length<8){amtBuf+=key;updateAmtDisp();}
+    }
+    return;
+  }
+
+  // PIN PAGES — LOGIN
+  if(currentPage==='pg-login'){
+    if(key==='cancel'){showPage('pg-welcome');return;}
+    if(key==='back'||key==='clr'){pinBuf=pinBuf.slice(0,-1);updateLoginPin();return;}
+    if(key==='ok'||key==='confirm'){doLogin();return;}
+    if(!isNaN(key)&&pinBuf.length<4){pinBuf+=key;updateLoginPin();}
+    if(pinBuf.length===4) setTimeout(doLogin,300);
+    return;
+  }
+
+  // PIN PAGES — REGISTER CREATE
+  if(currentPage==='pg-reg3'){
+    if(key==='cancel'){showPage('pg-welcome');return;}
+    if(key==='clr'){
+      if(pinStage==='confirm'){
+        const conf=['pcc0','pcc1','pcc2','pcc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(conf.length>0){let buf=conf.slice(0,-1);updatePinCells('confirm',buf);}
+      } else {
+        const cr=['pc0','pc1','pc2','pc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(cr.length>0){let buf=cr.slice(0,-1);updatePinCells('create',buf);}
+      }
+      return;
+    }
+    if(!isNaN(key)&&key!=='ok'){
+      if(pinStage!=='confirm'){
+        const cur=['pc0','pc1','pc2','pc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(cur.length<4){const nb=cur+key;updatePinCells('create',nb);if(nb.length===4){pinStage='confirm';}}
+      } else {
+        const cur=['pcc0','pcc1','pcc2','pcc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(cur.length<4){const nb=cur+key;updatePinCells('confirm',nb);}
+      }
+    }
+    if(key==='ok'||key==='confirm'){reg3Confirm();}
+    return;
+  }
+
+  // PIN — FORGOT NEW PIN
+  if(currentPage==='pg-newpin'){
+    if(key==='cancel'){startLogin();return;}
+    if(!isNaN(key)&&key!=='ok'){
+      if(pinStage==='first'||pinStage==='np-new'){
+        const cur=['np0','np1','np2','np3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(cur.length<4){const nb=cur+key;updateNewPinCells('np',nb);if(nb.length===4) pinStage='np-conf';}
+      } else {
+        const cur=['npc0','npc1','npc2','npc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(cur.length<4){const nb=cur+key;updateNewPinCells('npc',nb);}
+      }
+    }
+    if(key==='clr'){
+      const cur=['npc0','npc1','npc2','npc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+      if(cur.length>0){updateNewPinCells('npc',cur.slice(0,-1));}
+      else{const c2=['np0','np1','np2','np3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');updateNewPinCells('np',c2.slice(0,-1));pinStage='first';}
+    }
+    if(key==='ok'||key==='confirm'){doNewPin();}
+    return;
+  }
+
+  // PIN — CHANGE PIN
+  if(currentPage==='pg-changepin'){
+    if(key==='cancel'){showPage('pg-menu');return;}
+    if(pinStage==='cur'){
+      if(key==='clr'){const c=['cp0','cp1','cp2','cp3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');if(c.length>0)updateCPCells('cp',c.slice(0,-1));return;}
+      if(!isNaN(key)&&key!=='ok'){
+        const c=['cp0','cp1','cp2','cp3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(c.length<4){const nb=c+key;updateCPCells('cp',nb);if(nb.length===4){pinBuf=nb;}}
+      }
+    } else if(pinStage==='new'){
+      if(key==='clr'){
+        const nc=['cpnc0','cpnc1','cpnc2','cpnc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(nc.length>0){updateCPCells('cpnc',nc.slice(0,-1));return;}
+        const np=['cpn0','cpn1','cpn2','cpn3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(np.length>0) updateCPCells('cpn',np.slice(0,-1));
+        return;
+      }
+      if(!isNaN(key)&&key!=='ok'){
+        const np=['cpn0','cpn1','cpn2','cpn3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        const nc=['cpnc0','cpnc1','cpnc2','cpnc3'].map(id=>document.getElementById(id)?.dataset.val||'').join('');
+        if(np.length<4) updateCPCells('cpn',np+key);
+        else if(nc.length<4) updateCPCells('cpnc',nc+key);
+      }
+    }
+    if(key==='ok'||key==='confirm'){doChangePin();}
+    return;
+  }
+
+  // SUCCESS
+  if(currentPage==='pg-success'){
+    if(key==='confirm'||key==='ok'){showPage('pg-menu');updateMenu();}
+    return;
+  }
+
+  // DEFAULT
+  if(key==='cancel'||key==='back') showPage(currentAcc?'pg-menu':'pg-welcome');
+}
+
+// Keyboard support
+document.addEventListener('keydown',e=>{
+  if(e.key>='0'&&e.key<='9') kp(e.key);
+  if(e.key==='Enter') kp('ok');
+  if(e.key==='Backspace') kp('clr');
+  if(e.key==='Escape') kp('cancel');
+});
+</script>
+</body>
+</html>
